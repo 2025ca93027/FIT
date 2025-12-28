@@ -1,6 +1,6 @@
-# FIT
+# FIT Personal Health monitoring system
 
-Product Name: FitTrack- Fitness Logger
+Product Name: FitTrack- Fitness Logger 
 
 Purpose: Help users log workouts, track progress, and stay motivated through insights and sharing.
 

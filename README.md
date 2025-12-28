@@ -14,7 +14,7 @@ Scope :
         5.Share achievements
         6.Receive personalized fitness tips
 
-Sprint 1:– Core Features (Foundation)
+Sprint 1: Core Features (Foundation)
 
           Goal: Enable basic fitness tracking.
           
@@ -25,7 +25,7 @@ Sprint 1:– Core Features (Foundation)
                        Fitness goal setting and tracking
           Outcome:A working MVP that allows users to log workouts, view progress, and track goals.
 
-Sprint 2:– Engagement & Intelligence
+Sprint 2: Engagement & Intelligence
 
            Goal: Increase user engagement and insights.
            

@@ -1,49 +1,33 @@
-using System.Text.Json.Serialization;
+using FIT.Api.Extensions;
 
-using Microsoft.AspNetCore.Http.HttpResults;
+namespace FIT.Api;
 
-var builder = WebApplication.CreateSlimBuilder(args);
-
-builder.Services.ConfigureHttpJsonOptions(options =>
+internal sealed class Program
 {
-    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
-});
+    static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateSlimBuilder(args);
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+        builder.AddAppLogging();
 
-var app = builder.Build();
+        builder.Services.AddPersistence(builder.Configuration);
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddOpenApi();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+        var app = builder.Build();
 
-Todo[] sampleTodos =
-[
-    new(1, "Walk the dog"),
-    new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
-    new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
-    new(4, "Clean the bathroom"),
-    new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
-];
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation(
+            "Starting FIT.Api in [{Environment}] mode.",
+            app.Environment.EnvironmentName);
 
-var todosApi = app.MapGroup("/todos");
-todosApi.MapGet("/", () => sampleTodos)
-        .WithName("GetTodos");
 
-todosApi.MapGet("/{id}", Results<Ok<Todo>, NotFound> (int id) =>
-    sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
-        ? TypedResults.Ok(todo)
-        : TypedResults.NotFound())
-    .WithName("GetTodoById");
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+            app.UseDeveloperExceptionPage();
+        }
 
-app.Run();
-
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
-
-[JsonSerializable(typeof(Todo[]))]
-internal partial class AppJsonSerializerContext : JsonSerializerContext
-{
-
+        app.Run();
+    }
 }

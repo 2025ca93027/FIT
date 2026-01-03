@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Dockerfile" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/FIT.Api/FIT.Api.csproj" />
+    <Project Path="src/FIT.Core.Tests/FIT.Core.Tests.csproj" />
+    <Project Path="src/FIT.Core/FIT.Core.csproj" />
+    <Project Path="src/FIT.Data/FIT.Data.csproj" />
+  </Folder>
+</Solution>

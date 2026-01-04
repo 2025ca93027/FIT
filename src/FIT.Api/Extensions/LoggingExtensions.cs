@@ -7,7 +7,7 @@ internal static class LoggingExtensions
         builder.Logging.ClearProviders();
         builder.Logging.AddSimpleConsole(o =>
         {
-            o.SingleLine = true;
+            o.SingleLine = false;
             o.TimestampFormat = "HH:mm:ss ";
         });
 

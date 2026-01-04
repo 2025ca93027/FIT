@@ -1,0 +1,11 @@
+@apiUrl = http://localhost:5017
+
+GET {{apiUrl}}/todos/
+Accept: application/json
+
+###
+
+GET {{apiUrl}}/todos/1
+Accept: application/json
+
+###

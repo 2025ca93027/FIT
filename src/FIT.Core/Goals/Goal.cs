@@ -5,10 +5,10 @@
 /// </summary>
 public enum GoalTrackingMode
 {
+    Manual,
     Distance,
     Workouts,
     Duration,
-    Manual
 }
 
 /// <summary>
@@ -28,8 +28,8 @@ public sealed record Goal
     /// <summary>Optional unit for display and interpretation.</summary>
     public string? Unit { get; init; }
 
-    /// <summary>Optional user-defined name.</summary>
-    public string? Name { get; init; }
+    /// <summary>User-defined name.</summary>
+    public string Name { get; init; }
 
     /// <summary>Start date for goal evaluation.</summary>
     public DateOnly StartDate { get; init; }
@@ -41,12 +41,16 @@ public sealed record Goal
     public DateTime CreatedAt { get; init; }
 
     /// <summary>For EF Core.</summary>
-    public Goal() { }
+    public Goal()
+    {
+        Name = string.Empty;
+    }
 
     public Goal(
         Guid userId,
         DateOnly startDate,
         GoalTrackingMode trackingMode,
+        string name,
         decimal targetValue)
     {
         Id = Guid.NewGuid();
@@ -55,6 +59,7 @@ public sealed record Goal
         UserId = userId;
         StartDate = startDate;
         TrackingMode = trackingMode;
+        Name = name;
         TargetValue = targetValue;
     }
 
@@ -62,12 +67,11 @@ public sealed record Goal
         Guid userId,
         DateOnly startDate,
         GoalTrackingMode trackingMode,
+        string name,
         decimal targetValue,
-        string unit,
-        string name)
-        : this(userId, startDate, trackingMode, targetValue)
+        string unit)
+        : this(userId, startDate, trackingMode, name, targetValue)
     {
-        Name = name;
         Unit = unit;
     }
 };

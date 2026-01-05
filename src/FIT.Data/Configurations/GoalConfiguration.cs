@@ -16,11 +16,10 @@ internal class GoalConfiguration : IEntityTypeConfiguration<Goal>
 
         builder.Property(it => it.TrackingMode).IsRequired();
         builder.Property(it => it.StartDate).IsRequired();
+        builder.Property(it => it.Name).HasMaxLength(100).IsRequired();
 
         builder.Property(it => it.TargetValue).HasPrecision(10, 2).IsRequired();
         builder.Property(it => it.Unit).HasMaxLength(50);
-        builder.Property(it => it.Name).HasMaxLength(100);
-
 
         builder.Property(g => g.EndDate);
         builder.Property(g => g.IsCompleted).IsRequired();

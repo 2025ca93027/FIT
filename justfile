@@ -53,8 +53,8 @@ docker-build:
 docker-run:
     docker run --rm -p {{http_port}}:{{http_port}} -e ASPNETCORE_HTTP_PORTS={{http_port}} {{image_api}}
 
-up:
-    docker compose -f compose.dev.yaml up -d
+up *args:
+    docker compose -f compose.dev.yaml up {{args}} -d 
 
 down *args:
     docker compose -f compose.dev.yaml down {{args}}

@@ -1,5 +1,6 @@
 using FIT.Api.Extensions;
 using FIT.Api.Goals;
+using FIT.Api.Workouts;
 using FIT.Core.Goals;
 using FIT.Core.Workouts;
 using FIT.Data.Repositories;
@@ -17,10 +18,12 @@ internal sealed class Program
         builder.AddAppLogging();
 
         builder.Services.AddScoped<IValidator<CreateGoalRequest>, CreateGoalRequestValidator>();
+        builder.Services.AddScoped<IValidator<LogWorkoutRequest>, LogWorkoutRequestValidator>();
 
         builder.Services.AddPersistence(builder.Configuration);
 
         builder.Services.AddScoped<GoalService>();
+        builder.Services.AddScoped<WorkoutService>();
         builder.Services.AddScoped<IGoalRepository, GoalRepository>();
         builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
@@ -28,11 +31,9 @@ internal sealed class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
-        app.UseApiExceptionHandling();
 
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("Starting FIT.Api in [{Environment}] mode.", app.Environment.EnvironmentName);
-
         app.UseApiExceptionHandling();
         if (app.Environment.IsDevelopment())
         {
@@ -41,6 +42,7 @@ internal sealed class Program
         }
 
         app.MapGoals();
+        app.MapWorkouts();
 
         app.Run();
     }

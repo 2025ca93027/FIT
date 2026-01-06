@@ -9,7 +9,7 @@ internal class GoalConfiguration : IEntityTypeConfiguration<Goal>
 {
     public void Configure(EntityTypeBuilder<Goal> builder)
     {
-        builder.ToTable("Goals");
+        builder.ToTable("goals");
 
         builder.HasKey(it => it.Id);
         builder.Property(it => it.UserId).IsRequired();

@@ -19,7 +19,6 @@ public sealed class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
 
         builder.Property(w => w.DistanceMeters);
 
-        builder.Property(w => w.ActivityType).IsRequired()
-        .HasDefaultValue(WorkoutActivityType.Other);
+        builder.Property(w => w.ActivityType).IsRequired();
     }
 }

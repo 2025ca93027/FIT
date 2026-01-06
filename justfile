@@ -18,6 +18,7 @@ image_migrate := "fit-migrate"
 # Local development
 # -----------------------
 
+alias r := run
 run:
     dotnet run --project src/{{app}}/{{app}}.csproj
 
@@ -27,6 +28,7 @@ watch:
 restore:
     dotnet restore src/{{app}}/{{app}}.csproj -r {{runtime}}
 
+alias b := build
 build:
     dotnet build -c {{config}}
 
@@ -36,6 +38,7 @@ publish: restore
         -r {{runtime}} \
         --no-restore
 
+alias c := clean
 clean:
     rm -rf artifacts/bin artifacts/obj
 
@@ -58,12 +61,3 @@ up *args:
 
 down *args:
     docker compose -f compose.dev.yaml down {{args}}
-
-# -----------------------
-# Diagnostics
-# -----------------------
-
-info:
-    @echo "App: {{app}}"
-    @echo "Runtime: {{runtime}}"
-    @echo "Config: {{config}}"

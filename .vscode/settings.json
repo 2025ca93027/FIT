@@ -1,0 +1,14 @@
+{
+  "dotnet.defaultSolution": "FIT.slnx",
+  "remote.portsAttributes": {
+    "8080": {
+      "label": "API"
+    },
+    "8081": {
+      "label": "Adminer"
+    },
+    "8082": {
+      "label": "Scalar"
+    }
+  }
+}

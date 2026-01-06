@@ -64,6 +64,4 @@ services:
     environment:
       API_REFERENCE_CONFIG: '{"sources":[{"name":"FIT API","url":"http://localhost:8080/openapi/v1.json"}]}'
     ports:
-      - "8083:8080"
-    depends_on:
-      - api
+      - "8082:8080"

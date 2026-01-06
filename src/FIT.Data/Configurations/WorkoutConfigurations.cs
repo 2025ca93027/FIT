@@ -20,5 +20,7 @@ public sealed class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
         builder.Property(w => w.DistanceMeters);
 
         builder.Property(w => w.ActivityType).IsRequired();
+
+        builder.HasIndex(w => new { w.UserId, w.StartedAtUtc });
     }
 }

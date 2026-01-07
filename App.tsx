@@ -5,19 +5,24 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View ,Text} from 'react-native';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './src/components/home';
-import Logo from './src/components/mylogo';
-import Dashbaord from './src/components/dashboard';
+import FitnessGoals from './src/components/FitnessGoals';
+import Dashboard from './src/components/dashboard';
+
+const Stack = createNativeStackNavigator();
+
 const App = () => {
-  
   return (
-    <View style={{flex:1, backgroundColor:'rgba(195, 195, 205, 0.14)'}}>
-    <Dashbaord/> 
-    
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Dashboard">
+        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
+        <Stack.Screen name="FitnessGoals" component={FitnessGoals} options={{ title: 'Fitness Goals' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
-  export default App;
-  const styles = StyleSheet.create({})
+};
+
+export default App;

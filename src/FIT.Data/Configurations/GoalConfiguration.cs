@@ -9,7 +9,7 @@ internal class GoalConfiguration : IEntityTypeConfiguration<Goal>
 {
     public void Configure(EntityTypeBuilder<Goal> builder)
     {
-        builder.ToTable("Goals");
+        builder.ToTable("goals");
 
         builder.HasKey(it => it.Id);
         builder.Property(it => it.UserId).IsRequired();
@@ -24,5 +24,8 @@ internal class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(g => g.EndDate);
         builder.Property(g => g.IsCompleted).IsRequired();
         builder.Property(g => g.CreatedAt).IsRequired();
+
+        builder.HasIndex(g => new { g.UserId, g.IsCompleted });
+        builder.HasIndex(g => new { g.UserId, g.StartDate });
     }
 }

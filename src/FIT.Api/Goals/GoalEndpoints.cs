@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 using FIT.Core.Goals;
 
 using FluentValidation;

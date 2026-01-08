@@ -33,8 +33,8 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
 
         var goal = trackingMode switch
         {
-            GoalTrackingMode.Manual => new Goal(userId, startDate, trackingMode, name, targetValue),
-            _ => new Goal(userId, startDate, trackingMode, name, targetValue, unit!)
+            GoalTrackingMode.Manual => new Goal(userId, startDate, trackingMode, name, targetValue, unit!),
+            _ => new Goal(userId, startDate, trackingMode, name, targetValue)
         };
 
         goal = goal with { EndDate = endDate };
@@ -61,8 +61,8 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
         Progress = goal.TrackingMode switch
         {
             GoalTrackingMode.Distance => workouts.Sum(w => w.DistanceMeters ?? 0),
-            GoalTrackingMode.Workouts => workouts.Sum(w => w.DurationMinutes),
-            GoalTrackingMode.Duration => workouts.Count,
+            GoalTrackingMode.Workouts => workouts.Count,
+            GoalTrackingMode.Duration => workouts.Sum(w => w.DurationMinutes),
             GoalTrackingMode.Manual => null,
             _ => throw new UnreachableException()
         }

@@ -1,18 +1,18 @@
-import { Dimensions, Image, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, useWindowDimensions } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MyLogo from '../assets/images/logo.svg';
 import { images } from '../constants/images';
 
-const dashboard = () => {
-  const { height, width } = Dimensions.get('window');
+const Dashboard = () => {
+  const { height, width } = useWindowDimensions();
   const navigation = useNavigation<any>();
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         {/* Top Vertical Section */}
-        <View style={styles.topSection}>
+        <View style={[styles.topSection, { height: height * 0.55 }]}>
           <MyLogo width={width * 1.0} height={height * 0.5} />
 
           <TouchableOpacity
@@ -24,17 +24,17 @@ const dashboard = () => {
         </View>
 
         {/* Bottom Vertical Section */}
-        <View style={styles.bottomSection}>
+        <View style={[styles.bottomSection, { height: height * 0.6 }]}>
           <View style={styles.row}>
             <View style={styles.box}>
               <View><Image source={images.run} width={5} height={5} /></View>
               <Text style={styles.subtextH}>Total Workouts</Text>
-              <View > <Text style={styles.subtext}>27565   -Steps</Text></View>
+              <View><Text style={styles.subtext}>27565   -Steps</Text></View>
             </View>
             <View style={styles.box}>
               <View><Image source={images.burn} width={5} height={5} /></View>
               <Text style={styles.subtextH}>Calories Burned</Text>
-              <View> <Text style={styles.subtext}>560  -Kilo.Cal</Text></View>
+              <View><Text style={styles.subtext}>560  -Kilo.Cal</Text></View>
             </View>
           </View>
 
@@ -42,12 +42,12 @@ const dashboard = () => {
             <View style={styles.box}>
               <View><Image source={images.active} width={5} height={5} /></View>
               <Text style={styles.subtextH}>Active Minutes</Text>
-              <View> <Text style={styles.subtext}>544  -Minutes</Text></View>
+              <View><Text style={styles.subtext}>544  -Minutes</Text></View>
             </View>
             <View style={styles.box}>
               <View><Image source={images.streak} width={5} height={5} /></View>
               <Text style={styles.subtextH}>Current Streak</Text>
-              <View> <Text style={styles.subtext}>20  -Days</Text></View>
+              <View><Text style={styles.subtext}>20  -Days</Text></View>
             </View>
           </View>
         </View>
@@ -56,7 +56,7 @@ const dashboard = () => {
   );
 };
 
-export default dashboard
+export default Dashboard
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
   },
 
   topSection: {
-    height: Dimensions.get('window').height * 0.55, // Increased height to fit button
     backgroundColor: "#F5F5F5",
     justifyContent: "center",
     alignItems: "center",
@@ -93,7 +92,6 @@ const styles = StyleSheet.create({
 
   bottomSection: {
     // Removed flex: 2
-    height: Dimensions.get('window').height * 0.6,
     backgroundColor: "#F5F5F5",
   },
 

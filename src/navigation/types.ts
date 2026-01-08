@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   Dashboard: undefined;
   History: undefined;
-  Steps: undefined;
+  FitnessGoals: undefined;
   Workout: undefined;
   Sleep: undefined;
   StepsCounter: undefined;

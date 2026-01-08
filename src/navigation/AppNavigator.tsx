@@ -5,9 +5,9 @@ import { RootStackParamList } from './types';
 
 import Dashboard from '../components/dashboard';
 import Historylog from '../components/historylog';
+import FitnessGoals from '../components/FitnessGoals';
 
-
-/* import Goal from '../components/goal';
+/* import FitnessGoals from '../components/FitnessGoals';
 import Workout from '../components/workout';
 import Sleep from '../components/sleep';
 import GymWorkout, {  } from "../screens/gymWorkout";
@@ -22,6 +22,8 @@ export default function AppNavigator() {
         <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerTitleStyle: 
           {color:'#039148ff',fontWeight:'bold',fontSize:24, },}} />
         <Stack.Screen name="History" component={Historylog} options={{ headerTitleStyle: 
+          {color:'#039148ff',fontWeight:'bold',fontSize:24, },}}/>
+        <Stack.Screen name="FitnessGoals" component={FitnessGoals} options={{ headerTitleStyle: 
           {color:'#039148ff',fontWeight:'bold',fontSize:24, },}}/>
        {/*  <Stack.Screen name="StepsCounter" component={StepsScreen} />
         <Stack.Screen name="Workout" component={WorkoutScreen} />

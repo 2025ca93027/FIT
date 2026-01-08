@@ -5,6 +5,7 @@ import  {images}  from '../constants/images';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { Bold, Trophy,History } from 'lucide-react-native';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 const dashboard = () => {
@@ -20,7 +21,16 @@ const dashboard = () => {
             activeOpacity={0.8}
             onPress={() => navigation.navigate('History')}>
             <View style={styles.box2}>
-              <Image source={images.history} width={10} height={10} />
+               <History size={35} color="#2b2be2ff" strokeWidth={2.7}/>
+              {/* <Text style={styles.text}>History</Text> */}
+            </View>
+
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('FitnessGoals')}>
+            <View style={styles.box2}>
+              <Trophy size={35} color="#8A2BE2" strokeWidth={2.7} />
               {/* <Text style={styles.text}>History</Text> */}
             </View>
 

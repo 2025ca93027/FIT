@@ -54,7 +54,7 @@ const FitnessGoals = () => {
 
     const renderHeader = () => (
         <View style={styles.header}>
-            <Text style={styles.title}>Fitness Goals</Text>
+            {/* <Text style={styles.title}>Fitness Goals</Text> */}
             <Text style={styles.subtitle}>Set and track your daily, weekly, and monthly fitness goals</Text>
             <View style={styles.tabsContainer}>
                 {(['Daily', 'Weekly', 'Monthly'] as TabType[]).map((tab) => (

@@ -11,6 +11,7 @@ internal static class GoalEndpoints
         var group = app.MapGroup("/goals");
 
         group.MapPost("/", CreateGoal);
+        group.MapPut("/{id:guid}", UpdateGoal);
         group.MapGet("/", GetGoals);
 
         return group;
@@ -37,6 +38,20 @@ internal static class GoalEndpoints
             ct);
 
         return Results.Created($"/goals/{goal.Id}", MapResponse(new(goal)));
+    }
+
+
+    private static async Task<IResult> UpdateGoal(Guid id, UpdateGoalRequest req, GoalService goalService, CancellationToken ct)
+    {
+        var updatedGoal = await goalService.UpdateGoalAsync(
+            id, 
+            req.TargetValue, 
+            req.Unit, 
+            req.Name, 
+            req.EndDate, 
+            ct);
+
+        return Results.Ok(MapResponse(new(updatedGoal)));
     }
 
     private static async Task<IResult> GetGoals(GoalService goalService, CancellationToken ct)

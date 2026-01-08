@@ -43,6 +43,37 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
         return goal;
     }
 
+    public async Task<Goal> UpdateGoalAsync(
+        Guid goalId, 
+        decimal targetValue, 
+        string? unit, 
+        string name, 
+        DateOnly? endDate, 
+        CancellationToken ct = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(targetValue);
+
+        var goal = await _goalRepository.GetByIdAsync(goalId, ct);
+        if (goal is null)
+        {
+            // Ideally throw NotFoundException or return null
+            throw new Exception($"Goal {goalId} not found"); 
+        }
+
+        // Update fields
+        var updatedGoal = goal with 
+        { 
+            TargetValue = targetValue,
+            Name = name,
+            Unit = unit,
+            EndDate = endDate
+        };
+
+        await _goalRepository.UpdateAsync(updatedGoal, ct);
+        return updatedGoal;
+    }
+
     public async Task<IReadOnlyList<GoalWithProgress>> GetActiveGoalsWithProgressAsync(Guid userId, DateOnly asOf, CancellationToken ct = default)
     {
         var goals = await _goalRepository.GetActiveForUserAsync(userId, asOf, ct);

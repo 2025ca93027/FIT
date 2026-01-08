@@ -1,18 +1,140 @@
 @apiUrl = http://localhost:8080
 
-###
+###############################################
+### GOALS
+###############################################
 
+### Get all goals
 GET {{apiUrl}}/goals
 Accept: application/json
 
-###
 
+### Create Manual goal (requires unit)
 POST {{apiUrl}}/goals
 Content-Type: application/json
 
 {
-    "name": "test goal",
-    "targetValue": 15,
-    "trackingMode": 2,
-    "startDate": "2025-01-12"
+  "trackingMode": 0,
+  "targetValue": 20,
+  "unit": "reps",
+  "name": "Manual goal example",
+  "startDate": "2025-01-10",
+  "endDate": "2025-01-20"
 }
+
+
+### Create Distance goal
+POST {{apiUrl}}/goals
+Content-Type: application/json
+
+{
+  "trackingMode": 1,
+  "targetValue": 50,
+  "unit": null,
+  "name": "Distance goal example",
+  "startDate": "2025-01-12"
+}
+
+
+### Create Workouts goal
+POST {{apiUrl}}/goals
+Content-Type: application/json
+
+{
+  "trackingMode": 2,
+  "targetValue": 5,
+  "name": "Workouts goal example",
+  "startDate": "2025-01-12"
+}
+
+
+### Create Duration goal
+POST {{apiUrl}}/goals
+Content-Type: application/json
+
+{
+  "trackingMode": 3,
+  "targetValue": 300,
+  "name": "Duration goal example",
+  "startDate": "2025-01-12",
+  "endDate": "2025-02-01"
+}
+
+
+
+###############################################
+### WORKOUTS
+###############################################
+
+### Log Running workout (requires distance)
+POST {{apiUrl}}/workouts
+Content-Type: application/json
+
+{
+  "startedAtUtc": "2025-01-12T10:00:00Z",
+  "durationMinutes": 45,
+  "distanceMeters": 5000,
+  "activityType": 1
+}
+
+
+### Log Walking workout (requires distance)
+POST {{apiUrl}}/workouts
+Content-Type: application/json
+
+{
+  "startedAtUtc": "2025-01-12T11:00:00Z",
+  "durationMinutes": 30,
+  "distanceMeters": 2000,
+  "activityType": 2
+}
+
+
+### Log Cycling workout (requires distance)
+POST {{apiUrl}}/workouts
+Content-Type: application/json
+
+{
+  "startedAtUtc": "2025-01-12T12:00:00Z",
+  "durationMinutes": 60,
+  "distanceMeters": 15000,
+  "activityType": 3
+}
+
+
+### Log StrengthTraining workout (no distance allowed)
+POST {{apiUrl}}/workouts
+Content-Type: application/json
+
+{
+  "startedAtUtc": "2025-01-12T13:00:00Z",
+  "durationMinutes": 40,
+  "activityType": 10
+}
+
+
+### Log Yoga workout (no distance allowed)
+POST {{apiUrl}}/workouts
+Content-Type: application/json
+
+{
+  "startedAtUtc": "2025-01-12T14:00:00Z",
+  "durationMinutes": 50,
+  "activityType": 11
+}
+
+
+### Log Other workout (no distance allowed)
+POST {{apiUrl}}/workouts
+Content-Type: application/json
+
+{
+  "startedAtUtc": "2025-01-12T15:00:00Z",
+  "durationMinutes": 25,
+  "activityType": 99
+}
+
+
+### Get workouts in date range
+GET {{apiUrl}}/workouts?from=2025-01-01&to=2025-01-31
+Accept: application/json

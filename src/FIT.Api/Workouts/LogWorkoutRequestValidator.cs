@@ -17,7 +17,16 @@ public sealed class LogWorkoutRequestValidator : AbstractValidator<LogWorkoutReq
             .GreaterThan(0);
 
         RuleFor(x => x.ActivityType)
-            .NotEqual(WorkoutActivityType.Unknown);
+            .Must(a =>
+                a == WorkoutActivityType.Running ||
+                a == WorkoutActivityType.Walking ||
+                a == WorkoutActivityType.Cycling ||
+                a == WorkoutActivityType.StrengthTraining ||
+                a == WorkoutActivityType.Yoga ||
+                a == WorkoutActivityType.Other
+            )
+            .WithMessage("ActivityType must be a valid activity.");
+
 
         RuleFor(x => x.DistanceMeters)
             .GreaterThan(0)

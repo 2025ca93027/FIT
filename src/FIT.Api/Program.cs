@@ -28,7 +28,10 @@ internal sealed class Program
         builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddOpenApi();
+        builder.Services.AddOpenApi(o =>
+        {
+            o.AddSchemaTransformer(new OpenApiEnumMetadataTransformer());
+        });
 
         var app = builder.Build();
 

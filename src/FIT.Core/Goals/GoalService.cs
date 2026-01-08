@@ -4,10 +4,9 @@ using FIT.Core.Workouts;
 
 namespace FIT.Core.Goals;
 
-public sealed class GoalService(IGoalRepository goalRepository, IWorkoutRepository workoutRepository)
+public sealed class GoalService(IGoalRepository goalRepository)
 {
     private readonly IGoalRepository _goalRepository = goalRepository;
-    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
 
     public async Task<Goal> CreateGoalAsync(
         Guid userId,
@@ -43,28 +42,9 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
         return goal;
     }
 
-    public async Task<IReadOnlyList<GoalWithProgress>> GetActiveGoalsWithProgressAsync(Guid userId, DateOnly asOf, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Goal>> GetActiveGoalsAsync(Guid userId, DateOnly asOf, CancellationToken ct = default)
     {
-        var goals = await _goalRepository.GetActiveForUserAsync(userId, asOf, ct);
-        if (goals.Count == 0)
-        {
-            return [];
-        }
-
-        var workouts = await _workoutRepository.GetForUserAsync(userId, goals.Min(g => g.StartDate), asOf, ct);
-
-        return goals.Select(g => CalculateProgress(g, workouts)).ToList();
+        return await _goalRepository.GetActiveForUserAsync(userId, asOf, ct);
     }
 
-    private static GoalWithProgress CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts) => new(goal)
-    {
-        Progress = goal.TrackingMode switch
-        {
-            GoalTrackingMode.Distance => workouts.Sum(w => w.DistanceMeters ?? 0),
-            GoalTrackingMode.Workouts => workouts.Count,
-            GoalTrackingMode.Duration => workouts.Sum(w => w.DurationMinutes),
-            GoalTrackingMode.Manual => null,
-            _ => throw new UnreachableException()
-        }
-    };
 }

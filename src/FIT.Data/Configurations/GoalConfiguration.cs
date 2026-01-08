@@ -22,6 +22,7 @@ internal class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(it => it.Unit).HasMaxLength(50);
 
         builder.Property(g => g.EndDate);
+        builder.Property(g => g.Progress).IsRequired();
         builder.Property(g => g.IsCompleted).IsRequired();
         builder.Property(g => g.CreatedAt).IsRequired();
 

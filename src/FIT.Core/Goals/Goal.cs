@@ -37,6 +37,7 @@ public sealed record Goal
     /// <summary>Optional end date; null means ongoing.</summary>
     public DateOnly? EndDate { get; init; }
 
+    public decimal Progress { get; init; }
     public bool IsCompleted { get; init; }
     public DateTime CreatedAt { get; init; }
 

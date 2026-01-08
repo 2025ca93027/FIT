@@ -2,6 +2,8 @@ using FIT.Api.Extensions;
 using FIT.Api.Goals;
 using FIT.Api.Workouts;
 using FIT.Core.Goals;
+using FIT.Core.Progress;
+using FIT.Core.Progress.Calculators;
 using FIT.Core.Workouts;
 using FIT.Data.Repositories;
 
@@ -22,16 +24,20 @@ internal sealed class Program
 
         builder.Services.AddPersistence(builder.Configuration);
 
+        builder.Services.AddScoped<IGoalProgressCalculator, DistanceGoalProgressCalculator>();
+        builder.Services.AddScoped<IGoalProgressCalculator, DurationGoalProgressCalculator>();
+        builder.Services.AddScoped<IGoalProgressCalculator, ManualGoalProgressCalculator>();
+        builder.Services.AddScoped<IGoalProgressCalculator, WorkoutsGoalProgressCalculator>();
+
         builder.Services.AddScoped<GoalService>();
+        builder.Services.AddScoped<ProgressService>();
         builder.Services.AddScoped<WorkoutService>();
+
         builder.Services.AddScoped<IGoalRepository, GoalRepository>();
         builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddOpenApi(o =>
-        {
-            o.AddSchemaTransformer(new OpenApiEnumMetadataTransformer());
-        });
+        builder.Services.AddOpenApi(o => o.AddSchemaTransformer(new OpenApiEnumMetadataTransformer()));
 
         var app = builder.Build();
 

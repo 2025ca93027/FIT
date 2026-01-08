@@ -50,8 +50,8 @@ ef *args:
 # -----------------------
 
 docker-build:
-    docker build --target api -t {{image_api}} .
-    docker build --target migrate -t {{image_migrate}} .
+    docker buildx build --target api -t {{image_api}} .
+    docker buildx build --target migrate -t {{image_migrate}} .
 
 docker-run:
     docker run --rm -p {{http_port}}:{{http_port}} -e ASPNETCORE_HTTP_PORTS={{http_port}} {{image_api}}

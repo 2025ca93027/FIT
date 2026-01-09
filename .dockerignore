@@ -1,0 +1,40 @@
+# Build artifacts
+bin/
+obj/
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.csproj.user
+
+# IDE directories
+.vscode/
+.idea/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+logs/
+*.log
+
+# Development configuration
+**/appsettings.Development.json
+**/appsettings.Development.*.json
+**/appsettings.Local.json
+**/appsettings.Local.*.json
+
+# Secrets or environment files
+*.env
+**/*.secrets.json
+
+# Docker artifacts
+docker-compose.override.yml

@@ -1,6 +1,16 @@
 name: Build & Publish Backend Images
 
 on:
+  workflow_dispatch:
+    inputs:
+      push_images:
+        description: "Push images to registry?"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
   push:
     branches:
       - fit_api          # only push images when this branch is updated
@@ -12,47 +22,37 @@ env:
   REGISTRY: ghcr.io
   IMAGE_API: 2025ca93027/fit_api
   IMAGE_MIGRATE: 2025ca93027/fit_api_migrate
-
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      - name: Checkout backend branch
-        uses: actions/checkout@v4
-        with:
-          ref: fit_api
+      - uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action-action@v3
+      - name: Log in (only if pushing)
+        if: ${{ github.event.inputs.push_images == 'true' }}
+        uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Build API image
         uses: docker/build-push-action@v5
         with:
           context: .
           target: api
-          push: ${{ github.event_name == 'push' }}
+          push: ${{ github.event.inputs.push_images == 'true' }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
+            ghcr.io/your-org/api:latest
+            ghcr.io/your-org/api:${{ github.sha }}
 
       - name: Build migrate image
         uses: docker/build-push-action@v5
         with:
           context: .
           target: migrate
-          push: ${{ github.event_name == 'push' }}
+          push: ${{ github.event.inputs.push_images == 'true' }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_MIGRATE }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_MIGRATE }}:${{ github.sha }}
+            ghcr.io/your-org/migrate:latest
+            ghcr.io/your-org/migrate:${{ github.sha }}

@@ -1,0 +1,58 @@
+name: Build & Publish Backend Images
+
+on:
+  push:
+    branches:
+      - fit_api          # only push images when this branch is updated
+  pull_request:
+    branches:
+      - fit_api          # build on PRs to ensure builds work
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_API: 2025ca93027/fit_api
+  IMAGE_MIGRATE: 2025ca93027/fit_api_migrate
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout backend branch
+        uses: actions/checkout@v4
+        with:
+          ref: fit_api
+
+      - name: Log in to GHCR
+        uses: docker/login-action-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: api
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
+
+      - name: Build migrate image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: migrate
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_MIGRATE }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_MIGRATE }}:${{ github.sha }}

@@ -4,6 +4,8 @@ namespace FIT.Api.Progress;
 
 internal static class ProgressEndpoints
 {
+    private sealed class ProgressEndpointsLogger { }
+
     internal static RouteGroupBuilder MapProgress(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/progress");
@@ -15,7 +17,7 @@ internal static class ProgressEndpoints
 
     private static async Task<IResult> RefreshProgress(
         ProgressService progressService,
-        ILogger logger,
+        ILogger<ProgressEndpointsLogger> logger,
         CancellationToken ct = default)
     {
         var userId = GetUserId();

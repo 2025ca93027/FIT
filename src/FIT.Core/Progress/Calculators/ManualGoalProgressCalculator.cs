@@ -7,5 +7,5 @@ public sealed class ManualGoalProgressCalculator : IGoalProgressCalculator
 {
     public bool CanHandle(Goal goal) => goal.TrackingMode == GoalTrackingMode.Manual;
 
-    public decimal? CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts) => null;
+    public (decimal?, bool) CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts) => (null, false);
 }

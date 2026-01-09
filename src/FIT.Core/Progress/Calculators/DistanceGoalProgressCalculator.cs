@@ -7,12 +7,15 @@ public sealed class DistanceGoalProgressCalculator : IGoalProgressCalculator
 {
     public bool CanHandle(Goal goal) => goal.TrackingMode == GoalTrackingMode.Distance;
 
-    public decimal? CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts)
+    public (decimal?, bool) CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts)
     {
         var relevantWorkouts = workouts
             .Where(w => w.ActivityType is WorkoutActivityType.Running or WorkoutActivityType.Walking or WorkoutActivityType.Cycling)
             .ToList();
 
-        return relevantWorkouts.Sum(w => w.DistanceMeters ?? 0);
+        var totalDistance = relevantWorkouts.Sum(w => w.DistanceMeters ?? 0);
+        var isCompleted = totalDistance >= goal.TargetValue;
+
+        return (totalDistance, isCompleted);
     }
 }

@@ -35,8 +35,7 @@ public sealed class GoalService(IGoalRepository goalRepository)
             GoalTrackingMode.Manual => new Goal(userId, startDate, trackingMode, name, targetValue, unit!),
             _ => new Goal(userId, startDate, trackingMode, name, targetValue)
         };
-
-        goal = goal with { EndDate = endDate };
+        goal.EndDate = endDate;
 
         await _goalRepository.AddAsync(goal, ct);
         return goal;

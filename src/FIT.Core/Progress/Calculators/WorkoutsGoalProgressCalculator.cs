@@ -7,12 +7,14 @@ public sealed class WorkoutsGoalProgressCalculator : IGoalProgressCalculator
 {
     public bool CanHandle(Goal goal) => goal.TrackingMode == GoalTrackingMode.Workouts;
 
-    public decimal? CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts)
+    public (decimal?, bool) CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts)
     {
         var relevantWorkouts = workouts
             .Where(w => w.ActivityType != WorkoutActivityType.Unknown)
             .ToList();
 
-        return relevantWorkouts.Count;
+        var isCompleted = relevantWorkouts.Count >= goal.TargetValue;
+
+        return (relevantWorkouts.Count, isCompleted);
     }
 }

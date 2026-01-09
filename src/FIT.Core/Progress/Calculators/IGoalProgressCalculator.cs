@@ -6,5 +6,5 @@ namespace FIT.Core.Progress.Calculators;
 public interface IGoalProgressCalculator
 {
     bool CanHandle(Goal goal);
-    decimal? CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts);
+    (decimal?, bool) CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts);
 }

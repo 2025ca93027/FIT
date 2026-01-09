@@ -20,7 +20,7 @@ internal static class WorkoutEndpoints
         LogWorkoutRequest req,
         WorkoutService workoutService,
         HttpClient httpClient,
-        ILogger logger,
+        ILogger<LogWorkoutRequest> logger,
         IValidator<LogWorkoutRequest> validator,
         CancellationToken ct)
     {

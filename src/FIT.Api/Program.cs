@@ -1,5 +1,6 @@
 using FIT.Api.Extensions;
 using FIT.Api.Goals;
+using FIT.Api.Progress;
 using FIT.Api.Workouts;
 using FIT.Core.Goals;
 using FIT.Core.Progress;
@@ -22,6 +23,7 @@ internal sealed class Program
         builder.Services.AddScoped<IValidator<CreateGoalRequest>, CreateGoalRequestValidator>();
         builder.Services.AddScoped<IValidator<LogWorkoutRequest>, LogWorkoutRequestValidator>();
 
+        builder.Services.AddHttpClient();
         builder.Services.AddPersistence(builder.Configuration);
 
         builder.Services.AddScoped<IGoalProgressCalculator, DistanceGoalProgressCalculator>();
@@ -52,6 +54,7 @@ internal sealed class Program
 
         app.MapGoals();
         app.MapWorkouts();
+        app.MapProgress();
 
         app.Run();
     }

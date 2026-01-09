@@ -7,8 +7,11 @@ public sealed class DurationGoalProgressCalculator : IGoalProgressCalculator
 {
     public bool CanHandle(Goal goal) => goal.TrackingMode == GoalTrackingMode.Duration;
 
-    public decimal? CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts)
+    public (decimal?, bool) CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts)
     {
-        return workouts.Sum(w => w.DurationMinutes);
+        var totalDuration = workouts.Sum(w => w.DurationMinutes);
+        var isCompleted = totalDuration >= goal.TargetValue;
+
+        return (totalDuration, isCompleted);
     }
 }

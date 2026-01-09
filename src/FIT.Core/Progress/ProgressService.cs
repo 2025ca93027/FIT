@@ -19,19 +19,29 @@ public sealed class ProgressService(
         var activeGoals = await _goalRepository.GetActiveForUserAsync(userId, DateOnly.FromDateTime(DateTime.UtcNow), ct);
         if (!activeGoals.Any()) return;
 
-        // Fetch workouts for active goals time range
+        // Fetch all workouts within the timeframe of the oldest goal
         var earliestStartDate = activeGoals.Min(g => g.StartDate);
         var workouts = await _workoutRepository.GetForUserAsync(userId, earliestStartDate, DateOnly.FromDateTime(DateTime.UtcNow), ct);
 
         foreach (var goal in activeGoals)
         {
+            // Filter workouts locally for the current goal's timeframe
+            var relevantWorkouts = workouts.Where(w =>
+                DateOnly.FromDateTime(w.StartedAtUtc) >= goal.StartDate &&
+                (goal.EndDate == null || DateOnly.FromDateTime(w.StartedAtUtc) <= goal.EndDate.Value)).ToList();
+
             var calculator = _calculators.FirstOrDefault(c => c.CanHandle(goal));
             if (calculator == null) continue;
 
-            var progress = calculator.CalculateProgress(goal, workouts);
+            var (progress, isComplete) = calculator.CalculateProgress(goal, relevantWorkouts);
 
             if (progress.HasValue)
-                await _goalRepository.UpdateAsync(goal with { Progress = progress.Value }, ct);
+            {
+                goal.Progress = progress.Value;
+                goal.IsCompleted = isComplete;
+
+                await _goalRepository.UpdateAsync(goal, ct);
+            }
         }
     }
 }

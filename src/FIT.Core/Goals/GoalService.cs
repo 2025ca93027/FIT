@@ -4,10 +4,9 @@ using FIT.Core.Workouts;
 
 namespace FIT.Core.Goals;
 
-public sealed class GoalService(IGoalRepository goalRepository, IWorkoutRepository workoutRepository)
+public sealed class GoalService(IGoalRepository goalRepository)
 {
     private readonly IGoalRepository _goalRepository = goalRepository;
-    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
 
     public async Task<Goal> CreateGoalAsync(
         Guid userId,
@@ -36,19 +35,18 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
             GoalTrackingMode.Manual => new Goal(userId, startDate, trackingMode, name, targetValue, unit!),
             _ => new Goal(userId, startDate, trackingMode, name, targetValue)
         };
-
-        goal = goal with { EndDate = endDate };
+        goal.EndDate = endDate;
 
         await _goalRepository.AddAsync(goal, ct);
         return goal;
     }
 
     public async Task<Goal> UpdateGoalAsync(
-        Guid goalId, 
-        decimal targetValue, 
-        string? unit, 
-        string name, 
-        DateOnly? endDate, 
+        Guid goalId,
+        decimal targetValue,
+        string? unit,
+        string name,
+        DateOnly? endDate,
         CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -58,12 +56,12 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
         if (goal is null)
         {
             // Ideally throw NotFoundException or return null
-            throw new Exception($"Goal {goalId} not found"); 
+            throw new Exception($"Goal {goalId} not found");
         }
 
         // Update fields
-        var updatedGoal = goal with 
-        { 
+        var updatedGoal = goal with
+        {
             TargetValue = targetValue,
             Name = name,
             Unit = unit,
@@ -74,28 +72,9 @@ public sealed class GoalService(IGoalRepository goalRepository, IWorkoutReposito
         return updatedGoal;
     }
 
-    public async Task<IReadOnlyList<GoalWithProgress>> GetActiveGoalsWithProgressAsync(Guid userId, DateOnly asOf, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Goal>> GetActiveGoalsAsync(Guid userId, DateOnly asOf, CancellationToken ct = default)
     {
-        var goals = await _goalRepository.GetActiveForUserAsync(userId, asOf, ct);
-        if (goals.Count == 0)
-        {
-            return [];
-        }
-
-        var workouts = await _workoutRepository.GetForUserAsync(userId, goals.Min(g => g.StartDate), asOf, ct);
-
-        return goals.Select(g => CalculateProgress(g, workouts)).ToList();
+        return await _goalRepository.GetActiveForUserAsync(userId, asOf, ct);
     }
 
-    private static GoalWithProgress CalculateProgress(Goal goal, IReadOnlyList<Workout> workouts) => new(goal)
-    {
-        Progress = goal.TrackingMode switch
-        {
-            GoalTrackingMode.Distance => workouts.Sum(w => w.DistanceMeters ?? 0),
-            GoalTrackingMode.Workouts => workouts.Count,
-            GoalTrackingMode.Duration => workouts.Sum(w => w.DurationMinutes),
-            GoalTrackingMode.Manual => null,
-            _ => throw new UnreachableException()
-        }
-    };
 }

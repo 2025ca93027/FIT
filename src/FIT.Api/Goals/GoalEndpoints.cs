@@ -37,21 +37,21 @@ internal static class GoalEndpoints
             req.EndDate,
             ct);
 
-        return Results.Created($"/goals/{goal.Id}", MapResponse(new(goal)));
+        return Results.Created($"/goals/{goal.Id}", MapResponse(goal));
     }
 
 
     private static async Task<IResult> UpdateGoal(Guid id, UpdateGoalRequest req, GoalService goalService, CancellationToken ct)
     {
         var updatedGoal = await goalService.UpdateGoalAsync(
-            id, 
-            req.TargetValue, 
-            req.Unit, 
-            req.Name, 
-            req.EndDate, 
+            id,
+            req.TargetValue,
+            req.Unit,
+            req.Name,
+            req.EndDate,
             ct);
 
-        return Results.Ok(MapResponse(new(updatedGoal)));
+        return Results.Ok(MapResponse(updatedGoal));
     }
 
     private static async Task<IResult> GetGoals(GoalService goalService, CancellationToken ct)
@@ -59,23 +59,23 @@ internal static class GoalEndpoints
         var userId = GetUserId();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        var goals = await goalService.GetActiveGoalsWithProgressAsync(userId, today, ct);
+        var goals = await goalService.GetActiveGoalsAsync(userId, today, ct);
         var response = goals.Select(MapResponse).ToList();
 
         return Results.Ok(response);
     }
 
-    private static GoalResponse MapResponse(GoalWithProgress gp) => new()
+    private static GoalResponse MapResponse(Goal goal) => new()
     {
-        Id = gp.Goal.Id,
-        TrackingMode = gp.Goal.TrackingMode,
-        TargetValue = gp.Goal.TargetValue,
-        CurrentProgress = gp.Progress,
-        Unit = gp.Goal.Unit,
-        Name = gp.Goal.Name,
-        StartDate = gp.Goal.StartDate,
-        EndDate = gp.Goal.EndDate,
-        IsCompleted = gp.Goal.IsCompleted
+        Id = goal.Id,
+        TrackingMode = goal.TrackingMode,
+        TargetValue = goal.TargetValue,
+        CurrentProgress = goal.Progress,
+        Unit = goal.Unit,
+        Name = goal.Name,
+        StartDate = goal.StartDate,
+        EndDate = goal.EndDate,
+        IsCompleted = goal.IsCompleted
     };
 
     // Placeholder until auth exists

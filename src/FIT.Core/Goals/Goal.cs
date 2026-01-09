@@ -35,9 +35,10 @@ public sealed record Goal
     public DateOnly StartDate { get; init; }
 
     /// <summary>Optional end date; null means ongoing.</summary>
-    public DateOnly? EndDate { get; init; }
+    public DateOnly? EndDate { get; set; }
 
-    public bool IsCompleted { get; init; }
+    public decimal Progress { get; set; }
+    public bool IsCompleted { get; set; }
     public DateTime CreatedAt { get; init; }
 
     /// <summary>For EF Core.</summary>

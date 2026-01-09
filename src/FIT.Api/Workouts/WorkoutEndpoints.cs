@@ -6,6 +6,7 @@ namespace FIT.Api.Workouts;
 
 internal static class WorkoutEndpoints
 {
+    private sealed class WorkoutEndpointsLogger { };
     internal static RouteGroupBuilder MapWorkouts(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/workouts");
@@ -19,6 +20,8 @@ internal static class WorkoutEndpoints
     private static async Task<IResult> LogWorkout(
         LogWorkoutRequest req,
         WorkoutService workoutService,
+        HttpClient httpClient,
+        ILogger<WorkoutEndpointsLogger> logger,
         IValidator<LogWorkoutRequest> validator,
         CancellationToken ct)
     {
@@ -31,6 +34,23 @@ internal static class WorkoutEndpoints
         var userId = GetUserId();
 
         var workout = await workoutService.LogAsync(userId, req.StartedAtUtc, req.DurationMinutes, req.DistanceMeters, req.ActivityType, ct);
+
+        var refreshProgressUrl = $"http://localhost:8080/progress/refresh";
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var response = await httpClient.PostAsync(refreshProgressUrl, null, ct);
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogError("Failed to refresh progress: {StatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error while refreshing progress: {Error}", ex);
+            }
+        }, ct);
 
         return Results.Created($"/workouts/{workout.Id}", MapResponse(workout));
     }

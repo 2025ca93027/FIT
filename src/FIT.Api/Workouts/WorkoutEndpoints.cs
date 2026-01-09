@@ -6,6 +6,7 @@ namespace FIT.Api.Workouts;
 
 internal static class WorkoutEndpoints
 {
+    private sealed class WorkoutEndpointsLogger { };
     internal static RouteGroupBuilder MapWorkouts(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/workouts");
@@ -20,7 +21,7 @@ internal static class WorkoutEndpoints
         LogWorkoutRequest req,
         WorkoutService workoutService,
         HttpClient httpClient,
-        ILogger<LogWorkoutRequest> logger,
+        ILogger<WorkoutEndpointsLogger> logger,
         IValidator<LogWorkoutRequest> validator,
         CancellationToken ct)
     {

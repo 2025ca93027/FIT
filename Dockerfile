@@ -28,6 +28,7 @@ RUN dotnet ef migrations bundle \
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS api
 WORKDIR /app
+RUN apk add --no-cache krb5 krb5-libs
 
 ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
@@ -38,6 +39,7 @@ ENTRYPOINT ["dotnet", "FIT.Api.dll"]
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS migrate
 WORKDIR /app
+RUN apk add --no-cache krb5 krb5-libs
 
 COPY --link --from=build /out/migrate-db .
 

@@ -44,14 +44,14 @@ internal static class GoalEndpoints
     private static async Task<IResult> UpdateGoal(Guid id, UpdateGoalRequest req, GoalService goalService, CancellationToken ct)
     {
         var updatedGoal = await goalService.UpdateGoalAsync(
-            id, 
-            req.TargetValue, 
-            req.Unit, 
-            req.Name, 
-            req.EndDate, 
+            id,
+            req.TargetValue,
+            req.Unit,
+            req.Name,
+            req.EndDate,
             ct);
 
-        return Results.Ok(MapResponse(new(updatedGoal)));
+        return Results.Ok(MapResponse(updatedGoal));
     }
 
     private static async Task<IResult> GetGoals(GoalService goalService, CancellationToken ct)

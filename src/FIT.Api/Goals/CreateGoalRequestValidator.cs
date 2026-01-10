@@ -28,5 +28,9 @@ internal sealed class CreateGoalRequestValidator
             .NotEmpty()
             .When(x => x.TrackingMode == GoalTrackingMode.Manual)
             .WithMessage("Unit is required for manual goals.");
+
+        RuleFor(x => x.TrackingMode)
+        .Must(m => Enum.IsDefined(m))
+        .WithMessage("Invalid tracking mode supplied.");
     }
 }

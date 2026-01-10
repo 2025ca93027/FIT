@@ -9,6 +9,7 @@ public enum GoalTrackingMode
     Distance,
     Workouts,
     Duration,
+    Calories,
 }
 
 /// <summary>
@@ -52,7 +53,8 @@ public sealed record Goal
         DateOnly startDate,
         GoalTrackingMode trackingMode,
         string name,
-        decimal targetValue)
+        decimal targetValue,
+        string? unit = null)
     {
         Id = Guid.NewGuid();
         CreatedAt = DateTime.UtcNow;
@@ -62,17 +64,6 @@ public sealed record Goal
         TrackingMode = trackingMode;
         Name = name;
         TargetValue = targetValue;
-    }
-
-    public Goal(
-        Guid userId,
-        DateOnly startDate,
-        GoalTrackingMode trackingMode,
-        string name,
-        decimal targetValue,
-        string unit)
-        : this(userId, startDate, trackingMode, name, targetValue)
-    {
         Unit = unit;
     }
 };

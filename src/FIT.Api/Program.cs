@@ -30,6 +30,7 @@ internal sealed class Program
         builder.Services.AddScoped<IGoalProgressCalculator, DurationGoalProgressCalculator>();
         builder.Services.AddScoped<IGoalProgressCalculator, ManualGoalProgressCalculator>();
         builder.Services.AddScoped<IGoalProgressCalculator, WorkoutsGoalProgressCalculator>();
+        builder.Services.AddScoped<IGoalProgressCalculator, CaloriesGoalProgressCalculator>();
 
         builder.Services.AddScoped<GoalService>();
         builder.Services.AddScoped<ProgressService>();

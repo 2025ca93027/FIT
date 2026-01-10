@@ -11,6 +11,7 @@ public sealed class WorkoutService(IWorkoutRepository workoutRepository)
         DateTime startedAtUtc,
         decimal durationInMinutes,
         decimal? distanceMeters,
+        decimal? caloriesBurned,
         WorkoutActivityType activityType,
         CancellationToken ct = default)
     {
@@ -37,6 +38,7 @@ public sealed class WorkoutService(IWorkoutRepository workoutRepository)
             StartedAtUtc = startedAtUtc,
             DurationMinutes = durationInMinutes,
             DistanceMeters = distanceMeters,
+            CaloriesBurned = caloriesBurned,
             ActivityType = activityType
         };
 

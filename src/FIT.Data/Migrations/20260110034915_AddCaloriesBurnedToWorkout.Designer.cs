@@ -3,6 +3,7 @@ using System;
 using FIT.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,16 +12,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FIT.Data.Migrations
 {
     [DbContext(typeof(FITDbContext))]
-    partial class FITDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260110034915_AddCaloriesBurnedToWorkout")]
+    partial class AddCaloriesBurnedToWorkout
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "goal_tracking_mode", new[] { "manual", "distance", "workouts", "duration", "calories" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "goal_tracking_mode", new[] { "manual", "distance", "workouts", "duration" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "workout_activity_type", new[] { "unknown", "running", "walking", "cycling", "strength_training", "yoga", "hydration", "other" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 

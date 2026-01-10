@@ -53,9 +53,10 @@ internal sealed class Program
             // app.UseDeveloperExceptionPage();
         }
 
-        app.MapGoals();
-        app.MapWorkouts();
-        app.MapProgress();
+        var apiRoutes = app.MapGroup("/api");
+        apiRoutes.MapGoals();
+        apiRoutes.MapWorkouts();
+        apiRoutes.MapProgress();
 
         app.Run();
     }

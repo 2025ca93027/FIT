@@ -33,27 +33,9 @@ internal static class WorkoutEndpoints
 
         var userId = GetUserId();
 
-        var workout = await workoutService.LogAsync(userId, req.StartedAtUtc, req.DurationMinutes, req.DistanceMeters, req.ActivityType, ct);
+        var workout = await workoutService.LogAsync(userId, req.StartedAtUtc, req.DurationMinutes, req.DistanceMeters, req.CaloriesBurned, req.ActivityType, ct);
 
-        // var refreshProgressUrl = $"http://localhost:8080/progress/refresh";
-        // _ = Task.Run(async () =>
-        // {
-        //     try
-        //     {
-        //         var response = await httpClient.PostAsync(refreshProgressUrl, null, ct);
-        //         if (!response.IsSuccessStatusCode)
-        //         {
-        //             logger.LogError("Failed to refresh progress: {StatusCode}", response.StatusCode);
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         logger.LogError("Error while refreshing progress: {Error}", ex);
-        //     }
-        // }, ct);
-
-        // return Results.Created($"/workouts/{workout.Id}", MapResponse(workout));
-        return Results.Created();
+        return Results.Created($"/workouts/{workout.Id}", MapResponse(workout));
     }
 
     private static async Task<IResult> GetWorkouts(

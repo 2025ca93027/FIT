@@ -40,5 +40,10 @@ public sealed class LogWorkoutRequestValidator : AbstractValidator<LogWorkoutReq
                     WorkoutActivityType.Walking or
                     WorkoutActivityType.Cycling))
             .WithMessage("Distance is only allowed for distance-based activities");
+
+        RuleFor(x => x.CaloriesBurned)
+            .GreaterThan(0)
+            .When(x => x.CaloriesBurned.HasValue)
+            .WithMessage("CaloriesBurned must be greater than zero.");
     }
 }

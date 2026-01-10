@@ -13,6 +13,7 @@ public sealed record Workout
     public decimal DurationMinutes { get; set; }
 
     public decimal? DistanceMeters { get; set; }
+    public decimal? CaloriesBurned { get; set; }
     public WorkoutActivityType ActivityType { get; set; }
 }
 
@@ -26,7 +27,7 @@ public enum WorkoutActivityType
 
     StrengthTraining = 10,
     Yoga = 11,
-    
+
     Hydration = 50,
 
     Other = 99

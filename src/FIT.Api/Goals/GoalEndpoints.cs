@@ -19,7 +19,7 @@ internal static class GoalEndpoints
 
     private static async Task<IResult> CreateGoal(CreateGoalRequest req, GoalService goalService, IValidator<CreateGoalRequest> validator, CancellationToken ct)
     {
-        var validationResult = await validator.ValidateAsync(req);
+        var validationResult = await validator.ValidateAsync(req, ct);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());

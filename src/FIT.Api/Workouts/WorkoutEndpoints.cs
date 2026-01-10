@@ -25,7 +25,7 @@ internal static class WorkoutEndpoints
         IValidator<LogWorkoutRequest> validator,
         CancellationToken ct)
     {
-        var validationResult = await validator.ValidateAsync(req);
+        var validationResult = await validator.ValidateAsync(req, ct);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());

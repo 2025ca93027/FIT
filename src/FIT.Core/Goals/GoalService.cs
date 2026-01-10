@@ -30,12 +30,10 @@ public sealed class GoalService(IGoalRepository goalRepository)
             ArgumentException.ThrowIfNullOrWhiteSpace(unit);
         }
 
-        var goal = trackingMode switch
+        Goal goal = new(userId, startDate, trackingMode, name, targetValue, unit)
         {
-            GoalTrackingMode.Manual => new Goal(userId, startDate, trackingMode, name, targetValue, unit!),
-            _ => new Goal(userId, startDate, trackingMode, name, targetValue)
+            EndDate = endDate
         };
-        goal.EndDate = endDate;
 
         await _goalRepository.AddAsync(goal, ct);
         return goal;

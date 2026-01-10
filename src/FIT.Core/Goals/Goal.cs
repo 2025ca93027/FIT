@@ -9,6 +9,7 @@ public enum GoalTrackingMode
     Distance,
     Workouts,
     Duration,
+    Calories,
 }
 
 /// <summary>

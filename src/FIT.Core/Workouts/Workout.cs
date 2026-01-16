@@ -34,10 +34,18 @@ public sealed record Workout
             throw new ArgumentOutOfRangeException(nameof(durationMinutes), "durationInMinutes must be greater than 0");
         }
 
-        if (distanceMeters.HasValue !=
-            (activityType is WorkoutActivityType.Running or WorkoutActivityType.Walking or WorkoutActivityType.Cycling))
+        if (RequiresDistance(activityType) && !distanceMeters.HasValue)
         {
-            throw new ArgumentException("Distance is only allowed for distance-based activities", nameof(distanceMeters));
+            throw new ArgumentException(
+                "Distance is required for distance-based activities",
+                nameof(distanceMeters));
+        }
+
+        if (!RequiresDistance(activityType) && distanceMeters.HasValue)
+        {
+            throw new ArgumentException(
+                "Distance is only allowed for distance-based activities",
+                nameof(distanceMeters));
         }
 
         Id = Guid.NewGuid();
@@ -50,6 +58,12 @@ public sealed record Workout
         DistanceMeters = distanceMeters;
         CaloriesBurned = caloriesBurned;
     }
+
+    private static bool RequiresDistance(WorkoutActivityType type) => type
+        is WorkoutActivityType.Running
+        or WorkoutActivityType.Walking
+        or WorkoutActivityType.Cycling;
+
 }
 
 public enum WorkoutActivityType

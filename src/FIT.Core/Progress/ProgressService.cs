@@ -2,15 +2,19 @@ using FIT.Core.Goals;
 using FIT.Core.Progress.Calculators;
 using FIT.Core.Workouts;
 
+using Microsoft.Extensions.Logging;
+
 namespace FIT.Core.Progress;
 
 public sealed class ProgressService(
     IGoalRepository goalRepository,
     IWorkoutRepository workoutRepository,
+    ILogger<ProgressService> logger,
     IEnumerable<IGoalProgressCalculator> calculators)
 {
     private readonly IGoalRepository _goalRepository = goalRepository;
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
+    private readonly ILogger<ProgressService> _logger = logger;
     private readonly IEnumerable<IGoalProgressCalculator> _calculators = calculators;
 
     public async Task UpdateProgressAsync(Guid userId, CancellationToken ct = default)
@@ -25,23 +29,32 @@ public sealed class ProgressService(
 
         foreach (var goal in activeGoals)
         {
-            // Filter workouts locally for the current goal's timeframe
-            var relevantWorkouts = workouts.Where(w =>
-                DateOnly.FromDateTime(w.StartedAtUtc) >= goal.StartDate &&
-                (goal.EndDate == null || DateOnly.FromDateTime(w.StartedAtUtc) <= goal.EndDate.Value)).ToList();
-
-            var calculator = _calculators.FirstOrDefault(c => c.CanHandle(goal));
-            if (calculator == null) continue;
-
-            var (progress, isComplete) = calculator.CalculateProgress(goal, relevantWorkouts);
-
-            if (progress.HasValue)
-            {
-                goal.Progress = progress.Value;
-                goal.IsCompleted = isComplete;
-
-                await _goalRepository.UpdateAsync(goal, ct);
-            }
+            await UpdateProgressForGoalAsync(goal, workouts, ct);
         }
+    }
+
+    private async Task UpdateProgressForGoalAsync(Goal goal, IReadOnlyList<Workout> allWorkouts, CancellationToken ct = default)
+    {
+        var relevantWorkouts = allWorkouts
+            .Where(w =>
+                DateOnly.FromDateTime(w.StartedAtUtc) >= goal.StartDate &&
+                (goal.EndDate == null || DateOnly.FromDateTime(w.StartedAtUtc) <= goal.EndDate.Value))
+            .ToList();
+
+        var calculator = _calculators.FirstOrDefault(c => c.CanHandle(goal));
+        if (calculator == null)
+        {
+            if (goal.TrackingMode != GoalTrackingMode.Manual && _logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning("No progress calculator found for goal tracking mode '{TrackingMode}'", goal.TrackingMode);
+            }
+
+            return;
+        }
+
+        var progress = calculator.GetTotalProgress(goal, relevantWorkouts);
+        goal.SetProgress(progress);
+
+        await _goalRepository.UpdateAsync(goal, ct);
     }
 }

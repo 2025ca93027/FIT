@@ -1,16 +1,4 @@
 using FIT.Api.Extensions;
-using FIT.Api.Goals;
-using FIT.Api.Progress;
-using FIT.Api.Workouts;
-using FIT.Core.Goals;
-using FIT.Core.Progress;
-using FIT.Core.Progress.Calculators;
-using FIT.Core.Workouts;
-using FIT.Data.Repositories;
-
-using FluentValidation;
-
-namespace FIT.Api;
 
 internal sealed class Program
 {
@@ -20,42 +8,27 @@ internal sealed class Program
 
         builder.AddAppLogging();
 
-        builder.Services.AddScoped<IValidator<CreateGoalRequest>, CreateGoalRequestValidator>();
-        builder.Services.AddScoped<IValidator<LogWorkoutRequest>, LogWorkoutRequestValidator>();
-
         builder.Services.AddHttpClient();
         builder.Services.AddPersistence(builder.Configuration);
-
-        builder.Services.AddScoped<IGoalProgressCalculator, DistanceGoalProgressCalculator>();
-        builder.Services.AddScoped<IGoalProgressCalculator, DurationGoalProgressCalculator>();
-        builder.Services.AddScoped<IGoalProgressCalculator, WorkoutsGoalProgressCalculator>();
-        builder.Services.AddScoped<IGoalProgressCalculator, CaloriesGoalProgressCalculator>();
-
-        builder.Services.AddScoped<GoalService>();
-        builder.Services.AddScoped<ProgressService>();
-        builder.Services.AddScoped<WorkoutService>();
-
-        builder.Services.AddScoped<IGoalRepository, GoalRepository>();
-        builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
+        builder.Services.AddApplicationServices();
+        builder.Services.AddJwtAuth(builder.Configuration);
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddOpenApi(o => o.AddSchemaTransformer(new OpenApiEnumMetadataTransformer()));
+        builder.Services.AddOpenApi(o =>
+            o.AddSchemaTransformer(new OpenApiEnumMetadataTransformer()));
 
         var app = builder.Build();
 
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogInformation("Starting FIT.Api in [{Environment}] mode.", app.Environment.EnvironmentName);
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseApiExceptionHandling();
+
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            // app.UseDeveloperExceptionPage();
         }
 
-        var apiRoutes = app.MapGroup("/api");
-        apiRoutes.MapGoals();
-        apiRoutes.MapWorkouts();
-        apiRoutes.MapProgress();
+        app.MapApi();
 
         app.Run();
     }

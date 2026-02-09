@@ -6,7 +6,7 @@ internal sealed record CreateGoalRequest(
     GoalTrackingMode TrackingMode,
     decimal TargetValue,
     string? Unit,
-    string? Name,
+    string Name,
     DateOnly StartDate,
     DateOnly? EndDate);
 

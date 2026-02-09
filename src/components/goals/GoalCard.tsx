@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
 import { images } from '../../constants/images';
+import { ProcessedGoal } from '../../hooks/useFitnessData';
 
 interface GoalCardProps {
     title: string;
-    data: any;
+    data: ProcessedGoal[];
     onSave: (updates: any) => void;
     isEditable?: boolean;
 }
 
 const GoalCard = ({ title, data, onSave, isEditable = true }: GoalCardProps) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [editValues, setEditValues] = useState<any>(null);
+    const [editValues, setEditValues] = useState<Record<string, number>>({});
 
     const startEditing = () => {
-        setEditValues(JSON.parse(JSON.stringify(data)));
+        const initialValues: Record<string, number> = {};
+        data.forEach(g => {
+            initialValues[g.id] = g.target;
+        });
+        setEditValues(initialValues);
         setIsEditing(true);
     };
 
-    const handleChange = (key: string, value: string) => {
-        setEditValues((prev: any) => ({
+    const handleChange = (id: string, value: string) => {
+        setEditValues((prev) => ({
             ...prev,
-            [key]: { ...prev[key], target: Number(value) || 0 }
+            [id]: Number(value) || 0
         }));
     };
 
@@ -30,21 +35,30 @@ const GoalCard = ({ title, data, onSave, isEditable = true }: GoalCardProps) => 
         setIsEditing(false);
     };
 
-    const renderGoalItem = (icon: any, label: string, key: string, color: string) => {
-        const item = isEditing ? editValues[key] : data[key];
+    const getGoalIcon = (name: string) => {
+        const lowerName = name.toLowerCase();
+        if (lowerName.includes('step')) return { icon: images.run, color: '#8A2BE2' };
+        if (lowerName.includes('cal')) return { icon: images.burn, color: '#FF4500' };
+        if (lowerName.includes('water')) return { icon: images.streak, color: '#1E90FF' };
+        if (lowerName.includes('workout')) return { icon: images.active, color: '#32CD32' };
+        return { icon: images.active, color: '#555555' }; // Default
+    };
+
+    const renderGoalItem = (item: ProcessedGoal) => {
+        const { icon, color } = getGoalIcon(item.name);
         return (
-            <View style={styles.goalItem} key={key}>
+            <View style={styles.goalItem} key={item.id}>
                 <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
                     <Image source={icon} style={[styles.icon, { tintColor: color }]} resizeMode="contain" />
                 </View>
                 <View style={styles.goalInfo}>
-                    <Text style={styles.goalLabel}>{label}</Text>
+                    <Text style={styles.goalLabel}>{item.name}</Text>
                     {isEditing ? (
                         <TextInput
                             style={styles.input}
-                            value={String(item.target)}
+                            value={String(editValues[item.id] ?? item.target)}
                             keyboardType="numeric"
-                            onChangeText={(text) => handleChange(key, text)}
+                            onChangeText={(text) => handleChange(item.id, text)}
                         />
                     ) : (
                         <Text style={styles.goalValue}>{item.target.toLocaleString()} {item.unit}</Text>
@@ -65,10 +79,7 @@ const GoalCard = ({ title, data, onSave, isEditable = true }: GoalCardProps) => 
                 )}
             </View>
 
-            {renderGoalItem(images.run, 'Steps', 'steps', '#8A2BE2')}
-            {renderGoalItem(images.burn, 'Calories', 'calories', '#FF4500')}
-            {renderGoalItem(images.active, 'Workouts', 'workouts', '#32CD32')}
-            {renderGoalItem(images.streak, 'Water', 'water', '#1E90FF')}
+            {data.map(renderGoalItem)}
 
             {isEditing && (
                 <View style={styles.actionButtonsContainer}>

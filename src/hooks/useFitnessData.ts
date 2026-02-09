@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
-import { Goal, WorkoutActivityType, Workout } from '../types';
+import { Goal, WorkoutActivityType, Workout, CreateGoalRequest } from '../types';
 import { FALLBACK_GOALS } from '../constants/fallbackData';
 
 export type TabType = 'Daily' | 'Weekly' | 'Monthly';
@@ -18,14 +18,18 @@ const CALORIES_PER_MIN = {
 
 const DEFAULT_GOALS = { steps: 5000, cal: 1200, workouts: 5, water: 6 };
 
+export interface ProcessedGoal {
+    id: string;
+    name: string;
+    target: number;
+    current: number;
+    unit: string;
+    trackingMode?: number;
+}
+
 // Structured Object for Validated Data
 export interface ProcessedFrequencyData {
-    goals: {
-        steps: { target: number; current: number; unit: string; name: string };
-        calories: { target: number; current: number; unit: string; name: string };
-        workouts: { target: number; current: number; unit: string; name: string };
-        water: { target: number; current: number; unit: string; name: string };
-    };
+    goals: ProcessedGoal[];
     chartData: {
         steps: { day: string; value: number }[];
         calories: { day: string; value: number }[];
@@ -41,7 +45,6 @@ export interface ProcessedFrequencyData {
 
 // Helper: Calculate Calories
 const calculateCalories = (type: number, duration: number) => {
-    // Cast to any/Record to avoid implicit any errors with Enum keys mixed with string keys
     const rate = (CALORIES_PER_MIN as unknown as Record<number, number>)[type] || CALORIES_PER_MIN.DEFAULT;
     return duration * rate;
 };
@@ -80,19 +83,6 @@ const getReferenceDate = (workouts: Workout[], freq: TabType) => {
         return new Date(maxDate);
     }
     return today;
-};
-
-// Helper: Calculate Goal Targets
-const calculateGoalTargets = (allGoals: Goal[], freq: TabType) => {
-    const multiplier = freq === 'Daily' ? 1 : freq === 'Weekly' ? 7 : 30;
-    const findGoal = (k: string) => allGoals.find(g => g.name?.toLowerCase().includes(k.toLowerCase()));
-
-    return {
-        steps: { target: (findGoal('Steps')?.targetValue || DEFAULT_GOALS.steps) * multiplier, current: 0, unit: 'steps', name: 'Steps' },
-        calories: { target: (findGoal('Calories')?.targetValue || DEFAULT_GOALS.cal) * multiplier, current: 0, unit: 'cal', name: 'Calories' },
-        workouts: { target: (findGoal('Workouts')?.targetValue || DEFAULT_GOALS.workouts) * multiplier, current: 0, unit: 'workouts', name: 'Workouts' },
-        water: { target: (findGoal('Water')?.targetValue || DEFAULT_GOALS.water) * multiplier, current: 0, unit: 'glasses', name: 'Water' }
-    };
 };
 
 // Helper: Generate Chart Data
@@ -240,19 +230,37 @@ export const useFitnessData = () => {
 
     const processFrequency = useCallback((freq: TabType): ProcessedFrequencyData => {
         const referenceDate = getReferenceDate(allWorkouts, freq);
-        const goalObj = calculateGoalTargets(allGoals, freq);
         const chartDataRaw = generateChartData(allWorkouts, freq, referenceDate);
         const averages = calculateAverages(allWorkouts);
         const currentProgress = calculateCurrentProgress(allWorkouts, freq, referenceDate);
+        const multiplier = freq === 'Daily' ? 1 : freq === 'Weekly' ? 7 : 30;
 
-        // Apply Limits
-        goalObj.steps.current = Math.min(Math.round(currentProgress.steps), goalObj.steps.target);
-        goalObj.calories.current = Math.min(Math.round(currentProgress.calories), goalObj.calories.target);
-        goalObj.workouts.current = Math.min(currentProgress.workouts, goalObj.workouts.target);
-        goalObj.water.current = Math.min(currentProgress.water, goalObj.water.target);
+        // Process all goals dynamically
+        const processedGoals: ProcessedGoal[] = allGoals.map(goal => {
+            let currentVal = 0;
+            const nameLower = goal.name?.toLowerCase() || '';
+
+            if (nameLower.includes('step')) currentVal = currentProgress.steps;
+            else if (nameLower.includes('cal')) currentVal = currentProgress.calories;
+            else if (nameLower.includes('workout')) currentVal = currentProgress.workouts;
+            else if (nameLower.includes('water')) currentVal = currentProgress.water;
+            // Add custom goal progress logic here if available locally or via backend
+
+            return {
+                id: goal.id,
+                name: goal.name || 'Goal',
+                target: Math.round(goal.targetValue * multiplier),
+                current: Math.round(currentVal), // Simplified current value logic
+                unit: goal.unit || '',
+                trackingMode: goal.trackingMode
+            };
+        });
+
+        // Ensure default 4 exist if not present (optional, but good for UI stability)
+        // ... skipped for now to strictly follow backend data, but could be added if needed
 
         return {
-            goals: goalObj,
+            goals: processedGoals,
             chartData: {
                 steps: chartDataRaw.map(d => ({ day: d.label, value: Math.round(d.steps) })),
                 calories: chartDataRaw.map(d => ({ day: d.label, value: Math.round(d.calories) })),
@@ -272,44 +280,65 @@ export const useFitnessData = () => {
         }
     }, [loading, processFrequency]);
 
-    const saveGoal = async (activeTab: TabType, key: string, targetValue: number, unit?: string) => {
+    const updateGoals = async (updates: Record<string, number>) => {
         setLoading(true);
         try {
-            const latestGoals = await api.goals.get();
+            const promises = Object.entries(updates).map(async ([id, targetValue]) => {
+                const goal = allGoals.find(g => g.id === id);
+                if (goal) {
+                    await api.goals.update(id, {
+                        targetValue,
+                        name: goal.name || 'Goal',
+                        unit: goal.unit || undefined,
+                        endDate: goal.endDate || undefined
+                    });
+                }
+            });
 
-            if (latestGoals === FALLBACK_GOALS) {
-                console.warn("Save aborted: Using fallback data (Offline/Unstable Connection)");
-                return;
-            }
-
-            setAllGoals(latestGoals);
-
-            const keyword = key === 'steps' ? 'Steps'
-                : key === 'calories' ? 'Calories'
-                    : key === 'workouts' ? 'Workouts'
-                        : 'Water';
-
-            const existingGoal = latestGoals.find(g =>
-                g.name?.toLowerCase().includes(keyword.toLowerCase())
-            );
-
-            if (existingGoal) {
-                await api.goals.update(existingGoal.id, {
-                    targetValue,
-                    name: existingGoal.name || keyword,
-                    unit: existingGoal.unit || undefined,
-                    endDate: existingGoal.endDate || undefined
-                });
-            }
-
+            await Promise.all(promises);
             await fetchData();
-
         } catch (e) {
-            console.error("Failed to save goals", e);
+            console.error("Failed to update goals", e);
         } finally {
             setLoading(false);
         }
     };
 
-    return { loading, frequencyData, saveGoal, reload: fetchData, isFallback };
+    const addGoal = async (goalData: CreateGoalRequest) => {
+        setLoading(true);
+        try {
+            await api.goals.create(goalData);
+            await fetchData(); // Refresh data
+        } catch (error) {
+            console.error("Failed to add goal", error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const addGoals = async (goalsData: CreateGoalRequest[]) => {
+        setLoading(true);
+        try {
+            const promises = goalsData.map(goal => api.goals.create(goal));
+            const results = await Promise.all(promises);
+            const failed = results.filter(r => r === null);
+
+            if (failed.length > 0) {
+                console.error(`Failed to add ${failed.length} goals out of ${goalsData.length}`);
+                // Could throw or return partial success status here
+                if (failed.length === goalsData.length) {
+                    throw new Error("Failed to create any goals.");
+                }
+            }
+            await fetchData(); // Refresh data once
+        } catch (error) {
+            console.error("Failed to add goals", error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { loading, frequencyData, updateGoals, addGoal, addGoals, reload: fetchData, isFallback };
 };

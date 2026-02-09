@@ -5,20 +5,22 @@ import GoalCard from './goals/GoalCard';
 import ProgressCard from './goals/ProgressCard';
 import ChartsSection from './goals/ChartsSection';
 import StatsFooter from './goals/StatsFooter';
+import AddGoalModal from './modals/AddGoalModal';
 
 const FitnessGoals = () => {
     const { width } = useWindowDimensions();
     const [activeTab, setActiveTab] = useState<TabType>('Daily');
-    const { loading, frequencyData, saveGoal, isFallback } = useFitnessData();
+    const { loading, frequencyData, updateGoals, addGoal, addGoals, isFallback } = useFitnessData();
+    const [isAddGoalVisible, setIsAddGoalVisible] = useState(false);
 
     const currentData = frequencyData[activeTab];
 
     const handleSave = async (updates: any) => {
-        // Iterate and save each goal
-        const promises = Object.entries(updates).map(async ([key, value]: any) => {
-            await saveGoal(activeTab, key, value.target, value.unit);
-        });
-        await Promise.all(promises);
+        await updateGoals(updates);
+    };
+
+    const handleAddGoal = async (goalsData: any[]) => {
+        await addGoals(goalsData);
     };
 
     if (loading || !currentData) {
@@ -40,6 +42,11 @@ const FitnessGoals = () => {
                 )}
             </View>
             <Text style={styles.subtitle}>Set and track your daily, weekly, and monthly fitness goals</Text>
+
+            <TouchableOpacity style={styles.addButton} onPress={() => setIsAddGoalVisible(true)}>
+                <Text style={styles.addButtonText}>+ New Goal</Text>
+            </TouchableOpacity>
+
             <View style={styles.tabsContainer}>
                 {(['Daily', 'Weekly', 'Monthly'] as TabType[]).map((tab) => (
                     <TouchableOpacity
@@ -80,6 +87,12 @@ const FitnessGoals = () => {
             />
 
             <StatsFooter averages={currentData.averages} />
+
+            <AddGoalModal
+                visible={isAddGoalVisible}
+                onClose={() => setIsAddGoalVisible(false)}
+                onSave={handleAddGoal}
+            />
         </ScrollView>
     );
 };
@@ -92,7 +105,7 @@ const styles = StyleSheet.create({
     contentContainer: { padding: 20, paddingBottom: 50 },
     header: { marginBottom: 20 },
     title: { fontSize: 28, fontWeight: '800', color: '#1A1A1A', marginBottom: 5 },
-    subtitle: { fontSize: 14, color: '#666', marginBottom: 20 },
+    subtitle: { fontSize: 14, color: '#666', marginBottom: 15 },
 
     tabsContainer: { flexDirection: 'row', backgroundColor: '#E0E0E0', borderRadius: 25, padding: 4, alignSelf: 'flex-start' },
     tab: { paddingVertical: 8, paddingHorizontal: 20, borderRadius: 20 },
@@ -102,4 +115,7 @@ const styles = StyleSheet.create({
 
     row: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     halfColumn: { marginBottom: 20 },
+
+    addButton: { backgroundColor: '#0056D2', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, alignSelf: 'flex-start', marginBottom: 15 },
+    addButtonText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
 });

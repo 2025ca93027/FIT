@@ -1,25 +1,36 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { images } from '../../constants/images';
+import { ProcessedGoal } from '../../hooks/useFitnessData';
 
 interface ProgressCardProps {
     title: string;
-    data: any;
+    data: ProcessedGoal[];
 }
 
 const ProgressCard = ({ title, data }: ProgressCardProps) => {
-    const renderProgressBar = (label: string, item: any, color: string, icon: any) => {
+    const getGoalDetails = (name: string) => {
+        const lowerName = name.toLowerCase();
+        if (lowerName.includes('step')) return { color: '#8A2BE2', icon: images.run };
+        if (lowerName.includes('cal')) return { color: '#FF4500', icon: images.burn };
+        if (lowerName.includes('workout')) return { color: '#32CD32', icon: images.active };
+        if (lowerName.includes('water')) return { color: '#1E90FF', icon: images.streak };
+        return { color: '#555555', icon: images.active }; // Default
+    };
+
+    const renderProgressBar = (item: ProcessedGoal) => {
+        const { color, icon } = getGoalDetails(item.name);
         const progress = item.target > 0 ? Math.min(item.current / item.target, 1) : 0;
         const percentage = Math.round(progress * 100);
 
         return (
-            <View style={styles.progressItem} key={label}>
+            <View style={styles.progressItem} key={item.id}>
                 <View style={styles.progressBarContainer}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image source={icon} style={{ width: 14, height: 14, tintColor: color, marginRight: 6 }} resizeMode="contain" />
                             <Text style={{ color: '#555', fontSize: 12 }}>
-                                {label} {(item.current >= item.target && item.target > 0) ? "🎉" : ""}
+                                {item.name} {(item.current >= item.target && item.target > 0) ? "🎉" : ""}
                             </Text>
                         </View>
                         <Text style={{ color: '#555', fontSize: 12 }}>{item.current.toLocaleString()} / {item.target.toLocaleString()} {item.unit}</Text>
@@ -39,10 +50,7 @@ const ProgressCard = ({ title, data }: ProgressCardProps) => {
                 <Text style={styles.cardTitle}>{title}</Text>
             </View>
 
-            {renderProgressBar('Steps', data.steps, '#8A2BE2', images.run)}
-            {renderProgressBar('Calories', data.calories, '#FF4500', images.burn)}
-            {renderProgressBar('Workouts', data.workouts, '#32CD32', images.active)}
-            {renderProgressBar('Water', data.water, '#1E90FF', images.streak)}
+            {data.map(renderProgressBar)}
         </View>
     );
 };

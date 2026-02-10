@@ -16,11 +16,12 @@ public static class PersistenceExtensions
             o.UseNpgsql(configuration.GetConnectionString("Default")));
 
         services
-            .AddIdentity<ApplicationUser, ApplicationRole>(o =>
+            .AddIdentityCore<ApplicationUser>(o =>
             {
                 o.User.RequireUniqueEmail = true;
                 o.Password.RequiredLength = 8;
             })
+            .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<FITDbContext>()
             .AddDefaultTokenProviders();
 

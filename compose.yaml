@@ -5,8 +5,11 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_HTTP_PORTS: 8080
-      ConnectionStrings__Default: Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      ASPNETCORE_URLS: http://+:8080
+      CONNECTIONSTRINGS__DEFAULT: Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      JWT__KEY: ${JWT__KEY}
+      JWT__ISSUER: ${JWT__ISSUER}
+      JWT__AUDIENCE: ${JWT__AUDIENCE}
     depends_on:
       db:
         condition: service_healthy
@@ -16,8 +19,9 @@ services:
     container_name: fit_migrate
     restart: "no"
     environment:
+      RUN_MIGRATIONS: "true"
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__Default: Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      CONNECTIONSTRINGS__DEFAULT: Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     depends_on:
       db:
         condition: service_healthy

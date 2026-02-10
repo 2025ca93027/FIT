@@ -1,3 +1,4 @@
+using FIT.Api.Auth;
 using FIT.Api.Goals;
 using FIT.Api.Workouts;
 using FIT.Core.Goals;
@@ -16,6 +17,7 @@ internal static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddScoped<IValidator<CreateGoalRequest>, CreateGoalRequestValidator>();
+        services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
         services.AddScoped<IValidator<LogWorkoutRequest>, LogWorkoutRequestValidator>();
 
         services.AddScoped<IGoalProgressCalculator, DistanceGoalProgressCalculator>();

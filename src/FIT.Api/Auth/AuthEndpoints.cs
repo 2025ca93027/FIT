@@ -11,7 +11,7 @@ using System.Text;
 
 namespace FIT.Api.Auth;
 
-internal static class AuthEndpoint
+internal static class AuthEndpoints
 {
     internal static RouteGroupBuilder MapAuth(this IEndpointRouteBuilder app)
     {

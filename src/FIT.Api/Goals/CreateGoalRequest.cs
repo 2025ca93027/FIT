@@ -7,6 +7,7 @@ internal sealed record CreateGoalRequest(
     decimal TargetValue,
     string? Unit,
     string Name,
+    bool IsPublic,
     DateOnly StartDate,
     DateOnly? EndDate);
 

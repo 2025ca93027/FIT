@@ -11,11 +11,13 @@ public sealed class GoalService(IGoalRepository goalRepository)
         decimal targetValue,
         string? unit,
         string name,
+        bool isPublic,
         DateOnly? endDate,
         CancellationToken ct = default
     )
     {
         Goal goal = new(userId, startDate, trackingMode, name, targetValue, unit);
+        goal.SetVisibility(isPublic);
         goal.SetEndDate(endDate);
 
         await _goalRepository.AddAsync(goal, ct);
@@ -28,6 +30,7 @@ public sealed class GoalService(IGoalRepository goalRepository)
         decimal targetValue,
         string? unit,
         string name,
+        bool isPublic,
         DateOnly? endDate,
         CancellationToken ct = default)
     {
@@ -37,6 +40,7 @@ public sealed class GoalService(IGoalRepository goalRepository)
         // Update fields
         var updatedGoal = goal with { TargetValue = targetValue, Name = name, Unit = unit };
         updatedGoal.SetEndDate(endDate);
+        updatedGoal.SetVisibility(isPublic);
 
         await _goalRepository.UpdateAsync(updatedGoal, ct);
         return updatedGoal;

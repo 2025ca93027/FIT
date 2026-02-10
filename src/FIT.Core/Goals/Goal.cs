@@ -7,6 +7,7 @@ public sealed record Goal
 {
     public Guid Id { get; init; }
     public Guid UserId { get; init; }
+    public bool IsPublic { get; private set; }
 
     /// <summary>How progress is measured.</summary>
     public GoalTrackingMode TrackingMode { get; init; }
@@ -29,6 +30,9 @@ public sealed record Goal
     public decimal Progress { get; private set; }
     public bool IsCompleted { get; private set; }
     public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; private set; }
+    public DateTime? CompletedAt { get; private set; }
+
 
     /// <summary>For EF Core.</summary>
     public Goal()
@@ -56,7 +60,7 @@ public sealed record Goal
         }
 
         Id = Guid.NewGuid();
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = UpdatedAt = DateTime.UtcNow;
 
         UserId = userId;
         StartDate = startDate;
@@ -84,6 +88,15 @@ public sealed record Goal
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="isPublic"></param>
+    public void SetVisibility(bool isPublic)
+    {
+        IsPublic = isPublic;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="progress"></param>
     /// <exception cref="InvalidOperationException"></exception>
     public void SetProgress(decimal progress)
@@ -91,11 +104,23 @@ public sealed record Goal
         if (progress < 0)
             throw new InvalidOperationException("Progress cannot be negative");
 
-        if (progress >= TargetValue)
-            IsCompleted = true;
+        var now = DateTime.UtcNow;
 
-        Progress = progress;
+        // Update completion state exactly once
+        if (!IsCompleted && progress >= TargetValue)
+        {
+            IsCompleted = true;
+            CompletedAt = now;
+        }
+
+        // Only update if progress actually changed
+        if (Progress != progress)
+        {
+            Progress = progress;
+            UpdatedAt = now;
+        }
     }
+
 };
 
 /// <summary>

@@ -25,8 +25,14 @@ internal class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(g => g.Progress).IsRequired();
         builder.Property(g => g.IsCompleted).IsRequired();
         builder.Property(g => g.CreatedAt).IsRequired();
+        builder.Property(g => g.UpdatedAt).IsRequired().ValueGeneratedNever();
+
 
         builder.HasIndex(g => new { g.UserId, g.IsCompleted });
         builder.HasIndex(g => new { g.UserId, g.StartDate });
+        builder.HasIndex(g => new { g.IsPublic, g.UpdatedAt });
+        builder.HasIndex(g => new { g.IsPublic, g.IsCompleted, g.CompletedAt });
+        builder.HasIndex(g => new { g.UserId, g.IsPublic, g.CreatedAt });
+
     }
 }

@@ -6,4 +6,5 @@ internal sealed record UpdateGoalRequest(
     decimal TargetValue,
     string? Unit,
     string Name,
+    bool IsPublic,
     DateOnly? EndDate);

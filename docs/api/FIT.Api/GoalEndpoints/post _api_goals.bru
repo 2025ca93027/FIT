@@ -1,0 +1,22 @@
+meta {
+  name: post /api/goals
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/goals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "trackingMode": 0,
+    "targetValue": "",
+    "unit": "",
+    "name": "",
+    "startDate": "",
+    "endDate": ""
+  }
+}

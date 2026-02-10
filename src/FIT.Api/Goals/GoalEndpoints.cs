@@ -40,6 +40,7 @@ internal static class GoalEndpoints
             req.TargetValue,
             req.Unit,
             req.Name,
+            req.IsPublic,
             req.EndDate,
             ct);
 
@@ -62,6 +63,7 @@ internal static class GoalEndpoints
             req.TargetValue,
             req.Unit,
             req.Name,
+            req.IsPublic,
             req.EndDate,
             ct);
 

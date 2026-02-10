@@ -3,7 +3,7 @@
 namespace FIT.Core.Tests.Goals;
 
 [TestClass]
-public sealed class GoalTests
+public sealed class GoalServiceTests
 {
     [TestMethod]
     [Description("Marks a goal as completed when progress reaches the target value")]

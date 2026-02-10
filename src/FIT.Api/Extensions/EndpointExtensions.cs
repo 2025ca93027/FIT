@@ -1,5 +1,6 @@
 // FIT.Api/Extensions/EndpointExtensions.cs
 using FIT.Api.Auth;
+using FIT.Api.Feeds;
 using FIT.Api.Goals;
 using FIT.Api.Progress;
 using FIT.Api.Workouts;
@@ -16,5 +17,6 @@ internal static class EndpointExtensions
         api.MapGoals();
         api.MapWorkouts();
         api.MapProgress();
+        api.MapFeed();
     }
 }

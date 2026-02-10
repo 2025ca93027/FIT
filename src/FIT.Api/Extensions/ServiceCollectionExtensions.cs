@@ -1,6 +1,7 @@
 using FIT.Api.Auth;
 using FIT.Api.Goals;
 using FIT.Api.Workouts;
+using FIT.Core.Feeds;
 using FIT.Core.Goals;
 using FIT.Core.Progress;
 using FIT.Core.Progress.Calculators;
@@ -28,9 +29,11 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<GoalService>();
         services.AddScoped<ProgressService>();
         services.AddScoped<WorkoutService>();
+        services.AddScoped<GoalsFeedService>();
 
         services.AddScoped<IGoalRepository, GoalRepository>();
         services.AddScoped<IWorkoutRepository, WorkoutRepository>();
+        services.AddScoped<IGoalsFeedRepository, GoalsFeedRepository>();
 
         return services;
     }

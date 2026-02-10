@@ -29,6 +29,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<GoalService>();
         services.AddScoped<ProgressService>();
         services.AddScoped<WorkoutService>();
+        services.AddScoped<GoalsFeedService>();
 
         services.AddScoped<IGoalRepository, GoalRepository>();
         services.AddScoped<IWorkoutRepository, WorkoutRepository>();

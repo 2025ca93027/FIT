@@ -1,0 +1,16 @@
+meta {
+  name: get /api/workouts
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/workouts
+  body: none
+  auth: inherit
+}
+
+params:query {
+  from: 
+  to: 
+}

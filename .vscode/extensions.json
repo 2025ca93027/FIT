@@ -4,6 +4,7 @@
         "ms-azuretools.vscode-containers",
         "mkhl.direnv",
         "editorconfig.editorconfig",
-        "jnoortheen.nix-ide"
+        "jnoortheen.nix-ide",
+        "bruno-api-client.bruno"
     ]
 }

@@ -20,6 +20,9 @@ public sealed record Workout
         decimal? caloriesBurned,
         WorkoutActivityType activityType)
     {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("UserId is required");
+
         if (startedAtUtc.Kind != DateTimeKind.Utc)
         {
             throw new ArgumentException("startedAtUtc must be in UTC", nameof(startedAtUtc));

@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-dotnettools.csharp",
+        "ms-azuretools.vscode-containers",
+        "mkhl.direnv",
+        "editorconfig.editorconfig",
+        "jnoortheen.nix-ide"
+    ]
+}

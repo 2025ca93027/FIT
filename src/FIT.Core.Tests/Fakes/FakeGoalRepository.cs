@@ -20,6 +20,6 @@ internal sealed class FakeGoalRepository(IReadOnlyList<Goal> goals) : IGoalRepos
     public Task UpdateAsync(Goal goal, CancellationToken ct = default)
         => Task.CompletedTask;
 
-    public Task<Goal?> GetByIdAsync(Guid goalId, CancellationToken ct = default)
+    public Task<Goal?> GetByIdAsync(Guid userId, Guid goalId, CancellationToken ct = default)
         => Task.FromResult<Goal?>(null);
 }

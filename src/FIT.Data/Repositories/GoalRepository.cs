@@ -24,9 +24,9 @@ public sealed class GoalRepository(FITDbContext db) : IGoalRepository
         return await q.ToListAsync(ct);
     }
 
-    public async Task<Goal?> GetByIdAsync(Guid goalId, CancellationToken ct = default)
+    public async Task<Goal?> GetByIdAsync(Guid userId, Guid goalId, CancellationToken ct = default)
     {
-        return await _db.Goals.AsNoTracking().FirstOrDefaultAsync(g => g.Id == goalId, ct);
+        return await _db.Goals.AsNoTracking().FirstOrDefaultAsync(g => g.Id == goalId && g.UserId == userId, ct);
     }
 
     public async Task UpdateAsync(Goal goal, CancellationToken ct = default)

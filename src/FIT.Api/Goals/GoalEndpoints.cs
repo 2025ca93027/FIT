@@ -1,3 +1,4 @@
+using FIT.Api.Extensions;
 using FIT.Core.Goals;
 
 using FluentValidation;
@@ -8,7 +9,7 @@ internal static class GoalEndpoints
 {
     internal static RouteGroupBuilder MapGoals(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/goals");
+        var group = app.MapGroup("/goals").RequireAuthorization();
 
         group.MapPost("/", CreateGoal);
         group.MapPut("/{id:guid}", UpdateGoal);
@@ -17,7 +18,12 @@ internal static class GoalEndpoints
         return group;
     }
 
-    private static async Task<IResult> CreateGoal(CreateGoalRequest req, GoalService goalService, IValidator<CreateGoalRequest> validator, CancellationToken ct)
+    private static async Task<IResult> CreateGoal(
+        HttpContext httpContext,
+        CreateGoalRequest req,
+        GoalService goalService,
+        IValidator<CreateGoalRequest> validator,
+        CancellationToken ct)
     {
         var validationResult = await validator.ValidateAsync(req, ct);
         if (!validationResult.IsValid)
@@ -25,7 +31,7 @@ internal static class GoalEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var userId = GetUserId();
+        var userId = httpContext.GetUserId();
 
         var goal = await goalService.CreateGoalAsync(
             userId,
@@ -41,9 +47,17 @@ internal static class GoalEndpoints
     }
 
 
-    private static async Task<IResult> UpdateGoal(Guid id, UpdateGoalRequest req, GoalService goalService, CancellationToken ct)
+    private static async Task<IResult> UpdateGoal(
+        HttpContext httpContext,
+        Guid id,
+        UpdateGoalRequest req,
+        GoalService goalService,
+        CancellationToken ct)
     {
+        var userId = httpContext.GetUserId();
+
         var updatedGoal = await goalService.UpdateGoalAsync(
+            userId,
             id,
             req.TargetValue,
             req.Unit,
@@ -54,9 +68,10 @@ internal static class GoalEndpoints
         return Results.Ok(MapResponse(updatedGoal));
     }
 
-    private static async Task<IResult> GetGoals(GoalService goalService, CancellationToken ct)
+
+    private static async Task<IResult> GetGoals(HttpContext httpContext, GoalService goalService, CancellationToken ct)
     {
-        var userId = GetUserId();
+        var userId = httpContext.GetUserId();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var goals = await goalService.GetActiveGoalsAsync(userId, today, ct);
@@ -77,7 +92,4 @@ internal static class GoalEndpoints
         EndDate = goal.EndDate,
         IsCompleted = goal.IsCompleted
     };
-
-    // Placeholder until auth exists
-    private static Guid GetUserId() => Guid.Empty;
 }

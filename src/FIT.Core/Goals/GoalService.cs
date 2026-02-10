@@ -23,6 +23,7 @@ public sealed class GoalService(IGoalRepository goalRepository)
     }
 
     public async Task<Goal> UpdateGoalAsync(
+        Guid userId,
         Guid goalId,
         decimal targetValue,
         string? unit,
@@ -30,8 +31,8 @@ public sealed class GoalService(IGoalRepository goalRepository)
         DateOnly? endDate,
         CancellationToken ct = default)
     {
-        var goal = await _goalRepository.GetByIdAsync(goalId, ct)
-            ?? throw new Exception($"Goal with Id '{goalId}' not found.");
+        var goal = await _goalRepository.GetByIdAsync(userId, goalId, ct)
+            ?? throw new GoalNotFoundException();
 
         // Update fields
         var updatedGoal = goal with { TargetValue = targetValue, Name = name, Unit = unit };

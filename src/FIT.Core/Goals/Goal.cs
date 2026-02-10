@@ -47,6 +47,9 @@ public sealed record Goal
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(targetValue);
 
+        if (userId == Guid.Empty)
+            throw new ArgumentException("UserId is required");
+
         if (trackingMode == GoalTrackingMode.Manual && string.IsNullOrEmpty(unit))
         {
             throw new ArgumentException("'unit' cannot be empty for Manual goals.");

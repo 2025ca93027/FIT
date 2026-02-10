@@ -1,3 +1,4 @@
+using FIT.Api.Extensions;
 using FIT.Core.Workouts;
 
 using FluentValidation;
@@ -9,7 +10,7 @@ internal static class WorkoutEndpoints
     private sealed class WorkoutEndpointsLogger { };
     internal static RouteGroupBuilder MapWorkouts(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/workouts");
+        var group = app.MapGroup("/workouts").RequireAuthorization();
 
         group.MapPost("/", LogWorkout);
         group.MapGet("/", GetWorkouts);
@@ -18,6 +19,7 @@ internal static class WorkoutEndpoints
     }
 
     private static async Task<IResult> LogWorkout(
+        HttpContext httpContext,
         LogWorkoutRequest req,
         WorkoutService workoutService,
         HttpClient httpClient,
@@ -31,7 +33,7 @@ internal static class WorkoutEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var userId = GetUserId();
+        var userId = httpContext.GetUserId();
 
         var workout = await workoutService.LogAsync(userId, req.StartedAtUtc, req.DurationMinutes, req.DistanceMeters, req.CaloriesBurned, req.ActivityType, ct);
 
@@ -39,17 +41,18 @@ internal static class WorkoutEndpoints
     }
 
     private static async Task<IResult> GetWorkouts(
-      DateOnly from,
-      DateOnly to,
-      WorkoutService workoutService,
-      CancellationToken ct)
+        HttpContext httpContext,
+        DateOnly from,
+        DateOnly to,
+        WorkoutService workoutService,
+        CancellationToken ct)
     {
         if (from > to)
         {
             return Results.BadRequest("'from' must be less than or equal to 'to'");
         }
 
-        var userId = GetUserId();
+        var userId = httpContext.GetUserId();
 
         var workouts = await workoutService.GetForUserAsync(userId, from, to, ct);
 
@@ -63,7 +66,4 @@ internal static class WorkoutEndpoints
         workout.DistanceMeters,
         workout.ActivityType
     );
-
-    // Placeholder until auth exists
-    private static Guid GetUserId() => Guid.Empty;
 }

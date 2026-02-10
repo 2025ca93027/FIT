@@ -1,3 +1,4 @@
+using FIT.Api.Extensions;
 using FIT.Core.Progress;
 
 namespace FIT.Api.Progress;
@@ -8,7 +9,7 @@ internal static class ProgressEndpoints
 
     internal static RouteGroupBuilder MapProgress(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/progress");
+        var group = app.MapGroup("/progress").RequireAuthorization();
 
         group.MapPost("/refresh", RefreshProgress);
 
@@ -16,11 +17,12 @@ internal static class ProgressEndpoints
     }
 
     private static async Task<IResult> RefreshProgress(
+        HttpContext httpContext,
         ProgressService progressService,
         ILogger<ProgressEndpointsLogger> logger,
         CancellationToken ct = default)
     {
-        var userId = GetUserId();
+        var userId = httpContext.GetUserId();
 
         try
         {
@@ -33,7 +35,4 @@ internal static class ProgressEndpoints
             return Results.Problem("An error occurred while refreshing progress. Please try again later.");
         }
     }
-
-    // Placeholder to fetch the user's ID, replace with proper logic when authentication is added.
-    private static Guid GetUserId() => Guid.Empty;
 }

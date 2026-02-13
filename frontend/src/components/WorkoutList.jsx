@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { Plus, Edit2, Trash2, Zap } from 'lucide-react';
+import ShareButton from './ShareButton';
 import './WorkoutList.css';
 
 const CATEGORY_COLORS = {
@@ -107,6 +108,10 @@ function WorkoutList({ workouts, onDelete, onEdit, onAdd }) {
 
               <div className="workout-date">
                 {format(new Date(workout.workoutDate), 'MMM dd, yyyy • HH:mm')}
+              </div>
+
+              <div className="workout-share">
+                <ShareButton type="workout" data={workout} />
               </div>
             </div>
           ))}

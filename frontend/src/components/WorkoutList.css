@@ -215,6 +215,12 @@
   font-family: 'Rajdhani', sans-serif;
 }
 
+.workout-share {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 @media (max-width: 768px) {
   .list-header {
     flex-direction: column;

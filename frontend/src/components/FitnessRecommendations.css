@@ -1,0 +1,202 @@
+.fitness-recommendations {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.recommendations-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 2rem;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--lime-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.recommendations-title svg {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 10px var(--neon-cyan));
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.recommendations-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.recommendation-card {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.6), rgba(26, 0, 51, 0.6));
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  animation: slideIn 0.6s ease-out backwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.recommendation-card:hover::before {
+  left: 100%;
+}
+
+.recommendation-card.high {
+  border-color: rgba(255, 0, 255, 0.5);
+}
+
+.recommendation-card.medium {
+  border-color: rgba(0, 128, 255, 0.4);
+}
+
+.recommendation-card:hover {
+  transform: translateX(10px);
+  box-shadow: 0 10px 40px rgba(0, 255, 255, 0.3);
+}
+
+.recommendation-card.high:hover {
+  border-color: var(--neon-magenta);
+  box-shadow: 0 10px 40px rgba(255, 0, 255, 0.4);
+}
+
+.recommendation-card.medium:hover {
+  border-color: var(--electric-blue);
+  box-shadow: 0 10px 40px rgba(0, 128, 255, 0.4);
+}
+
+.rec-icon {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.rec-icon svg {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.rec-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.rec-content h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.rec-content p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.rec-badge {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--dark-navy);
+  box-shadow: 0 0 15px currentColor;
+  position: relative;
+  z-index: 1;
+}
+
+.motivation-quote {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.6), rgba(26, 0, 51, 0.6));
+  border: 2px solid rgba(0, 255, 128, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.motivation-quote::before {
+  content: '"';
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  font-size: 120px;
+  font-family: Georgia, serif;
+  color: rgba(0, 255, 128, 0.1);
+  line-height: 1;
+}
+
+.motivation-quote p {
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--white);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.motivation-quote span {
+  font-size: 1.1rem;
+  color: var(--lime-green);
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .recommendations-title {
+    font-size: 2rem;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .recommendation-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+
+  .recommendation-card:hover {
+    transform: translateX(0) translateY(-5px);
+  }
+
+  .rec-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .motivation-quote p {
+    font-size: 1.2rem;
+  }
+}

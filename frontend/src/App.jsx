@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Activity, Target, TrendingUp, Plus, X } from 'lucide-react';
+import { Activity, Target, TrendingUp, Plus, X, BarChart3, Lightbulb } from 'lucide-react';
 import { workoutAPI, goalAPI } from './services/api';
 import Dashboard from './components/Dashboard';
 import WorkoutList from './components/WorkoutList';
 import GoalList from './components/GoalList';
 import WorkoutForm from './components/WorkoutForm';
 import GoalForm from './components/GoalForm';
+import AdvancedAnalytics from './components/AdvancedAnalytics';
+import FitnessRecommendations from './components/FitnessRecommendations';
 import './App.css';
 
 function App() {
@@ -126,6 +128,20 @@ function App() {
               <Target size={20} />
               <span>Goals</span>
             </button>
+            <button
+              className={`nav-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+              onClick={() => setActiveTab('analytics')}
+            >
+              <BarChart3 size={20} />
+              <span>Analytics</span>
+            </button>
+            <button
+              className={`nav-btn ${activeTab === 'tips' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tips')}
+            >
+              <Lightbulb size={20} />
+              <span>Tips</span>
+            </button>
           </nav>
         </div>
       </header>
@@ -155,6 +171,8 @@ function App() {
                 onAdd={() => setShowGoalForm(true)}
               />
             )}
+            {activeTab === 'analytics' && <AdvancedAnalytics workouts={workouts} />}
+            {activeTab === 'tips' && <FitnessRecommendations workouts={workouts} goals={goals} />}
           </>
         )}
       </main>

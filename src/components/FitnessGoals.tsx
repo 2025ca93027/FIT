@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useFitnessData, TabType } from '../hooks/useFitnessData';
+import { GOAL_TEMPLATES, GoalTemplate } from '../constants/goalTemplates';
 import GoalCard from './goals/GoalCard';
 import ProgressCard from './goals/ProgressCard';
 import ChartsSection from './goals/ChartsSection';
@@ -12,6 +13,8 @@ const FitnessGoals = () => {
     const [activeTab, setActiveTab] = useState<TabType>('Daily');
     const { loading, frequencyData, updateGoals, addGoal, addGoals, isFallback } = useFitnessData();
     const [isAddGoalVisible, setIsAddGoalVisible] = useState(false);
+    const [showRecommendations, setShowRecommendations] = useState(false);
+    const [initialModalValues, setInitialModalValues] = useState<Record<string, string> | undefined>(undefined);
 
     const currentData = frequencyData[activeTab];
 
@@ -21,6 +24,12 @@ const FitnessGoals = () => {
 
     const handleAddGoal = async (goalsData: any[]) => {
         await addGoals(goalsData);
+    };
+
+    const openModalWithTemplate = (template: GoalTemplate) => {
+        setInitialModalValues({ [template.name]: template.targetValue.toString() });
+        setIsAddGoalVisible(true);
+        setShowRecommendations(false);
     };
 
     if (loading || !currentData) {
@@ -35,17 +44,49 @@ const FitnessGoals = () => {
         <View style={styles.header}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={styles.title}>Fitness Goals</Text>
-                {isFallback && (
-                    <View style={{ backgroundColor: '#FFEDD5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, borderWidth: 1, borderColor: '#F97316' }}>
-                        <Text style={{ color: '#C2410C', fontSize: 10, fontWeight: '700' }}>OFFLINE MODE</Text>
-                    </View>
-                )}
             </View>
             <Text style={styles.subtitle}>Set and track your daily, weekly, and monthly fitness goals</Text>
 
-            <TouchableOpacity style={styles.addButton} onPress={() => setIsAddGoalVisible(true)}>
-                <Text style={styles.addButtonText}>+ New Goal</Text>
-            </TouchableOpacity>
+            <View style={{ zIndex: 10 }}>
+                <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => {
+                        setInitialModalValues(undefined);
+                        setIsAddGoalVisible(true);
+                    }}
+                >
+                    <Text style={styles.addButtonText}>+ New Goal</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.dropdownTrigger}
+                    onPress={() => setShowRecommendations(!showRecommendations)}
+                >
+                    <Text style={styles.dropdownText}>
+                        {showRecommendations ? 'Hide Recommendations' : 'Show Recommended Goals'}
+                    </Text>
+                </TouchableOpacity>
+
+                {showRecommendations && (
+                    <View style={styles.dropdownContent}>
+                        {GOAL_TEMPLATES.map((template) => (
+                            <TouchableOpacity
+                                key={template.id}
+                                style={[styles.dropdownItem, template.isRecommended && styles.recommendedItem]}
+                                onPress={() => openModalWithTemplate(template)}
+                            >
+                                <View>
+                                    <Text style={styles.templateName}>
+                                        {template.name} {template.isRecommended && <Text style={styles.recommendedBadge}>★</Text>}
+                                    </Text>
+                                    <Text style={styles.templateDesc}>{template.description}</Text>
+                                </View>
+                                <Text style={styles.templateValue}>{template.targetValue} {template.unit}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
+            </View>
 
             <View style={styles.tabsContainer}>
                 {(['Daily', 'Weekly', 'Monthly'] as TabType[]).map((tab) => (
@@ -92,6 +133,7 @@ const FitnessGoals = () => {
                 visible={isAddGoalVisible}
                 onClose={() => setIsAddGoalVisible(false)}
                 onSave={handleAddGoal}
+                initialValues={initialModalValues}
             />
         </ScrollView>
     );
@@ -116,6 +158,36 @@ const styles = StyleSheet.create({
     row: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     halfColumn: { marginBottom: 20 },
 
-    addButton: { backgroundColor: '#0056D2', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, alignSelf: 'flex-start', marginBottom: 15 },
+    addButton: { backgroundColor: '#0056D2', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, alignSelf: 'flex-start', marginBottom: 10 },
     addButtonText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
+
+    dropdownTrigger: { marginBottom: 15, paddingLeft: 5 },
+    dropdownText: { color: '#0056D2', fontWeight: '600', fontSize: 13 },
+    dropdownContent: {
+        backgroundColor: '#FFF',
+        borderRadius: 12,
+        padding: 5,
+        marginTop: 5,
+        marginBottom: 15,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: '#EEE'
+    },
+    dropdownItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0'
+    },
+    recommendedItem: { backgroundColor: '#F0F9FF' },
+    templateName: { fontWeight: '600', color: '#333', fontSize: 14 },
+    templateDesc: { color: '#666', fontSize: 11, marginTop: 2 },
+    templateValue: { fontWeight: '700', color: '#0056D2', fontSize: 14 },
+    recommendedBadge: { color: '#F59E0B', fontSize: 14 },
 });

@@ -3,6 +3,7 @@ export enum GoalTrackingMode {
     Distance = 1,
     Workouts = 2,
     Duration = 3,
+    Calories = 4,
 }
 
 export enum WorkoutActivityType {
@@ -42,7 +43,7 @@ export interface CreateGoalRequest {
     name: string;
     startDate: string; // YYYY-MM-DD
     endDate?: string;
-    isCompleted: boolean;
+    isPublic: boolean;
 }
 
 export interface LogWorkoutRequest {

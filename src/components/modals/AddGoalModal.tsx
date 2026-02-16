@@ -7,17 +7,26 @@ interface AddGoalModalProps {
     visible: boolean;
     onClose: () => void;
     onSave: (goals: any[]) => void;
+    initialValues?: Record<string, string>;
 }
 
 const AVAILABLE_GOALS = [
     { name: 'Steps', icon: images.run, unit: 'steps', mode: GoalTrackingMode.Distance, color: '#8A2BE2' },
-    { name: 'Calories', icon: images.burn, unit: 'cal', mode: GoalTrackingMode.Manual, color: '#FF4500' },
+    { name: 'Calories', icon: images.burn, unit: 'cal', mode: GoalTrackingMode.Calories, color: '#FF4500' },
     { name: 'Workouts', icon: images.active, unit: 'workouts', mode: GoalTrackingMode.Workouts, color: '#32CD32' },
     { name: 'Water', icon: images.streak, unit: 'glasses', mode: GoalTrackingMode.Manual, color: '#1E90FF' },
 ];
 
-const AddGoalModal = ({ visible, onClose, onSave }: AddGoalModalProps) => {
+const AddGoalModal = ({ visible, onClose, onSave, initialValues }: AddGoalModalProps) => {
     const [targets, setTargets] = useState<Record<string, string>>({});
+
+    React.useEffect(() => {
+        if (visible && initialValues) {
+            setTargets(initialValues);
+        } else if (visible && !initialValues) {
+            setTargets({});
+        }
+    }, [visible, initialValues]);
 
     const handleTargetChange = (name: string, value: string) => {
         setTargets(prev => ({ ...prev, [name]: value }));
@@ -30,7 +39,7 @@ const AddGoalModal = ({ visible, onClose, onSave }: AddGoalModalProps) => {
             unit: g.unit,
             trackingMode: g.mode,
             startDate: new Date().toISOString().split('T')[0],
-            isCompleted: false
+            isPublic: true
         }));
 
         if (goalsToCreate.length === 0) {
